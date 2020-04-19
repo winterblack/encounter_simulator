@@ -17,14 +17,14 @@ class Dice
 end
 
 class D20
-  def self.roll(advantage='')
+  def self.roll advantage=''
     case advantage
-    when ''
-      rand 1..20
     when 'advantage'
       [rand(1..20), rand(1..20)].max
     when 'disadvantage'
       [rand(1..20), rand(1..20)].min
+    else
+      rand 1..20
     end
   end
 end
