@@ -1,18 +1,19 @@
 class Dice
+  attr_reader :count, :type
+
   def initialize expression
-    parts = expression.split(/[d+]/).map!(&:to_i)
-    @count = parts[0]
-    @type = parts[1]
-    @bonus = parts[2] || 0
+    parts = expression.split(/[d]/).map!(&:to_i)
+    @count = parts.first
+    @type = parts.last
   end
 
   def roll crit=false
-    dice = crit ? @count*2 : @count
-    dice.times.collect { rand 1..@type }.reduce(:+) + @bonus
+    dice = crit ? count * 2 : count
+    dice.times.collect { rand 1..type }.reduce(:+)
   end
 
   def average
-    (@count + @count * @type)/2 + @bonus
+    (count + count * type)/2
   end
 end
 

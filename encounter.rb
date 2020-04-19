@@ -1,9 +1,10 @@
 class Encounter
   attr_reader :characters
+
   def initialize characters
     @characters = characters
-    prepare_characters
     characters.each &:roll_initiative
+    assign_allies_and_foes
   end
 
   def run
@@ -21,7 +22,7 @@ class Encounter
 
   private
 
-  def prepare_characters
+  def assign_allies_and_foes
     pcs = characters.select &:pc
     monsters = characters.reject &:pc
     characters.each do |character|

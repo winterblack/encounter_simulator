@@ -2,9 +2,9 @@ require_relative 'dice'
 
 class Attack
   attr_accessor :character, :total_damage_dealt, :sneak_attack
-  attr_reader :name, :attack_bonus, :damage_dice, :ranged, :finesse
+  attr_reader :name, :attack_bonus, :damage_dice, :ranged
 
-  def initialize name, attack_bonus, damage, options={ ranged: false, finesse: false }
+  def initialize name, attack_bonus, damage, options={ ranged: false }
     @name = name
     @attack_bonus = attack_bonus
     @damage_dice = Dice damage
@@ -26,9 +26,9 @@ class Attack
     end
   end
 
-  def efficacy target, options={ disadvantage: false}
+  def efficacy target
+    return [0, self]
     hit_chance = (21 + @attack_bonus - target.ac) / 20.0
-    hit_chance = hit_chance**2 if options[:disadvantage]
     damage_dice.average * hit_chance / target.hp
   end
 
