@@ -3,7 +3,7 @@ class Dice
     parts = expression.split(/[d+]/).map!(&:to_i)
     @count = parts[0]
     @type = parts[1]
-    @bonus = parts[2]
+    @bonus = parts[2] || 0
   end
 
   def roll crit=false
