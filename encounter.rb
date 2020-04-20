@@ -12,6 +12,7 @@ class Encounter
   end
 
   def run
+    print "\nNew Encounter\n"
     until over
       play_round
     end

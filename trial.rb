@@ -22,6 +22,8 @@ class Trial
 
   def calculate_averages
     average_rounds = (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
+    rounds_max = outcomes.map(&:rounds).max
+    rounds_min = outcomes.map(&:rounds).min
     average_hp_remaining = outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
     no_deaths = outcomes.select { |outcome| outcome.deaths == 0 }.count
     one_death = outcomes.select { |outcome| outcome.deaths == 1 }.count
@@ -41,6 +43,8 @@ class Trial
     tpk_chance = tpks / count.to_f
 
     print "\nAverage rounds: #{average_rounds}\n"
+    print "\nMinimum rounds: #{rounds_min}\n"
+    print "\nMaximum rounds: #{rounds_max}\n"
     print "\nAverage HP remaining: #{(average_hp_remaining * 100).round}%\n"
     print "\nChance of no character deaths: #{(no_death_chance * 100).round}%\n"
     # print "\nChance of one character death: #{(one_death_chance * 100).round}%\n"

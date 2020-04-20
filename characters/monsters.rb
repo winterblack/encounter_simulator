@@ -10,7 +10,7 @@ class Orc < Monster
     @ac = 13
     @hp = 15
     @current_hp = 15
-    @actions = [Greataxe.new]
+    @actions = [Weapon.forge(:greataxe)]
     @str = +3
     @dex = +1
     @con = +3

@@ -13,7 +13,7 @@ fighter = Fighter.new(
   dex: +2,
   con: +3,
   ac: 16, #chain mail
-  actions: [Greatsword.new],
+  actions: [Weapon.forge(:greatsword)],
 )
 
 rogue = Rogue.new(
@@ -23,7 +23,7 @@ rogue = Rogue.new(
   con: +3,
   int: +2,
   ac: 14, #leather
-  actions: [LightCrossbow.new]
+  actions: [Weapon.forge(:light_crossbow)]
 )
 
 wizard = Wizard.new(
@@ -34,7 +34,7 @@ wizard = Wizard.new(
   int: +3,
   ac: 13, #unarmored
   actions: [
-    LightCrossbow.new,
+    Weapon.forge(:light_crossbow),
     BurningHands.new,
   ],
 )
@@ -46,7 +46,7 @@ cleric = Cleric.new(
   con: +3,
   wis: +3,
   ac: 18, #chain mail, shield
-  actions: [Mace.new],
+  actions: [Weapon.forge(:mace)],
   bonus_actions: [HealingWord.new]
 )
 

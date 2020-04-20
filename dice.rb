@@ -18,11 +18,11 @@ class Dice
 end
 
 class D20
-  def self.roll advantage=''
+  def self.roll advantage=nil
     case advantage
-    when 'advantage'
+    when :advantage
       [rand(1..20), rand(1..20)].max
-    when 'disadvantage'
+    when :disadvantage
       [rand(1..20), rand(1..20)].min
     else
       rand 1..20

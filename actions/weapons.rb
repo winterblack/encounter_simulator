@@ -6,8 +6,28 @@ require_relative '../dice'
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :ranged, :finesse
+  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged
   attr_accessor :sneak_attack
+
+  def initialize name, ability, damage, options={}
+    @name = name.to_s.sub('_', ' ')
+    @ability = ability
+    @damage_dice = Dice damage
+    @ranged = options[:ranged]
+  end
+
+  def self.forge weapon
+    case weapon
+    when :greatsword
+      self.new weapon, :str, '2d6'
+    when :light_crossbow
+      self.new weapon, :dex, '1d8', ranged: true
+    when :mace
+      self.new weapon, :str, '1d6'
+    when :greataxe
+      self.new weapon, :str, '1d12'
+    end
+  end
 
   def weapon
     true
@@ -26,7 +46,7 @@ class Weapon < Action
       damage = damage_dice.roll(crit) + damage_bonus
       sneaking = sneaking? target
       damage += sneak_attack.roll(crit) if sneaking
-      p "#{"#{character.name} sneak attacks! " if sneaking}#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with #{self.class}."
+      p "#{"#{character.name} sneak attacks! " if sneaking}#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with a #{name}."
       target.take damage
     else
       p "#{character.name} misses #{target.name}."
@@ -58,35 +78,5 @@ class Weapon < Action
   def engage target
     character.engaged << target unless character.engaged.include? target
     target.engaged << character unless target.engaged.include? character
-  end
-end
-
-class Greatsword < Weapon
-  def initialize
-    @ability = :str
-    @damage_dice = Dice '2d6'
-  end
-end
-
-class LightCrossbow < Weapon
-  def initialize
-    @ability = :dex
-    @damage_dice = Dice '1d8'
-    @ranged = true
-  end
-end
-
-class Mace < Weapon
-  def initialize
-    @name = 'Mace'
-    @ability = :str
-    @damage_dice = Dice '1d6'
-  end
-end
-
-class Greataxe < Weapon
-  def initialize
-    @ability = :str
-    @damage_dice = Dice '1d12'
   end
 end
