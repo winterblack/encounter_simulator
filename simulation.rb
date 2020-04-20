@@ -4,6 +4,7 @@ require_relative 'characters/monsters'
 require_relative 'actions/weapons'
 require_all 'actions/spells'
 require_relative 'encounter'
+require_relative 'trial'
 
 fighter = Fighter.new(
   name: 'Fighter',
@@ -12,7 +13,7 @@ fighter = Fighter.new(
   dex: +2,
   con: +3,
   ac: 16, #chain mail
-  actions: [Greatsword.new]
+  actions: [Greatsword.new],
 )
 
 rogue = Rogue.new(
@@ -57,8 +58,4 @@ orcs = []
 
 characters = party + orcs
 
-characters.each { |character| p character }
-
-Encounter.new(characters).run
-
-characters.each { |character| p character }
+trial = Trial.new(characters, 1000).run

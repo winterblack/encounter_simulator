@@ -1,6 +1,8 @@
+require 'require_all'
 require_relative 'character'
 require_relative 'player_character'
 require_relative 'spellcaster'
+require_all 'actions/class_features'
 
 class Cleric < Character
   include PlayerCharacter
@@ -17,6 +19,7 @@ class Cleric < Character
 end
 
 class Fighter < Character
+  attr_accessor :second_wind_used
   include PlayerCharacter
   HD_Type = 10
 
@@ -24,6 +27,10 @@ class Fighter < Character
     super(options)
     @melee = options[:melee] || true
     @save_proficiencies = [:str, :con]
+
+    second_wind = SecondWind.new
+    second_wind.character = self
+    @bonus_actions = [second_wind]
   end
 end
 

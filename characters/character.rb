@@ -34,11 +34,11 @@ class Character
   end
 
   def take_turn
-    return if dead
     action = choose_action
-    bonus_action = choose_bonus_action
     action.perform
-    bonus_action.perform if bonus_action
+    return if foes.none?(&:standing)
+    bonus_action = choose_bonus_action
+    bonus_action.perform if bonus_action && bonus_action.evaluate > 0
   end
 
   def take damage
@@ -60,11 +60,21 @@ class Character
     "<#{name} hp=#{current_hp}#{' dead' if dead}>"
   end
 
-  private
+  def reset
+    self.current_hp = hp
+    self.dead = false
+    self.engaged = []
+  end
 
   def choose_action
     actions.max { |a, b| a.evaluate <=> b.evaluate }
   end
+
+  def over
+    allies.none?(&:standing) || foes.none?(&:standing)
+  end
+
+  private
 
   def choose_bonus_action
     bonus_actions.max { |a, b| a.evaluate <=> b.evaluate }

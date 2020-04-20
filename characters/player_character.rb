@@ -20,12 +20,26 @@ module PlayerCharacter
     check_if_dying
   end
 
+  def heal healing
+    super healing
+    self.dying = false
+    self.stable = false
+    self.death_saves = []
+  end
+
   def standing
     !dead && !dying && !stable
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots_remaining}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+  end
+
+  def reset
+    super
+    self.dying = false
+    self.stable = false
+    self.death_saves = []
   end
 
   private
@@ -73,6 +87,7 @@ module PlayerCharacter
     end
     die if death_saves.count(false) > 2
     p "#{name}'s death saves: #{death_saves}" unless death_saves.empty?
+    false
   end
 
   def set_starting_hp

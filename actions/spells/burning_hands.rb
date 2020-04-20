@@ -6,7 +6,7 @@ class BurningHands < Spell
   Level = 1
 
   def evaluate
-    return -1 unless super
+    return 0 unless super
     targets = choose_targets
     count = targets.count
     average_dex = targets.sum { |target| target.dex } / count
@@ -38,6 +38,6 @@ class BurningHands < Spell
   end
 
   def choose_targets
-    character.foes.min(3) { |foe| foe.current_hp }
+    character.foes.reject(&:dead).min(3) { |foe| foe.current_hp }
   end
 end

@@ -5,12 +5,11 @@ class HealingWord < Spell
   Level = 1
 
   def evaluate
-    return -1 unless super
+    return 0 unless super
     target = choose_target
     healing = [average_healing, target.hp - target.current_hp].min
     healing_value = healing / target.hp.to_f
-    target_value = target.actions.map(&:evaluate).max
-    target.standing ? healing_value : (healing_value + target_value)
+    target.standing ? healing_value : (healing_value + target_value(target))
   end
 
   def perform
@@ -37,7 +36,7 @@ class HealingWord < Spell
     if downed_allies.none?
       living_allies.sort_by(&:hp).reverse.min { |a, b| a.current_hp <=> b.current_hp }
     else
-      downed_allies.max { |a, b| a.choose_action.evaluate <=> b.choose_action.evaluate }
+      downed_allies.max { |a, b| target_value(a) <=> target_value(b) }
     end
   end
 
@@ -47,5 +46,9 @@ class HealingWord < Spell
 
   def downed_allies
     living_allies.reject(&:standing)
+  end
+
+  def target_value target
+    target.actions.map(&:evaluate).max
   end
 end

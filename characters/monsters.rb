@@ -15,8 +15,6 @@ class Orc < Monster
     @dex = +1
     @con = +3
     @int = -2
-    @wis = 0
-    @cha = 0
     @proficiency_bonus = +2
     @melee = true
     equip_weapons

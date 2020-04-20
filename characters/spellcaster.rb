@@ -33,6 +33,11 @@ module Spellcaster
     set_spell_slots
   end
 
+  def reset
+    super
+    self.spell_slots_remaining = spell_slots.clone
+  end
+
   private
 
   def set_spell_attack_bonus
@@ -46,7 +51,7 @@ module Spellcaster
   end
 
   def set_spell_slots
-    self.spell_slots = SPELL_SLOTS_BY_LEVEL[level]
-    self.spell_slots_remaining = SPELL_SLOTS_BY_LEVEL[level]
+    self.spell_slots = SPELL_SLOTS_BY_LEVEL[level].clone
+    self.spell_slots_remaining = SPELL_SLOTS_BY_LEVEL[level].clone
   end
 end

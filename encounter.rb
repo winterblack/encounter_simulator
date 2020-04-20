@@ -1,3 +1,5 @@
+require_relative 'outcome'
+
 class Encounter
   attr_reader :characters
 
@@ -11,12 +13,13 @@ class Encounter
     until over
       play_round
     end
+    return Outcome.new characters
   end
 
   def play_round
     characters.sort_by(&:initiative).reverse.each do |character|
+      character.take_turn unless character.dead
       break if over
-      character.take_turn
     end
   end
 

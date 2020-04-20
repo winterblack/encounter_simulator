@@ -20,7 +20,6 @@ class Weapon < Action
 
   def perform
     target = choose_target
-    binding.pry unless target
     engage target unless ranged
     hit, crit = roll_to_hit target
     if hit
@@ -47,9 +46,13 @@ class Weapon < Action
   end
 
   def evaluate_target target
-    hit_chance = (21 + attack_bonus - target.ac) / 20.0
-    damage = damage_dice.average + damage_bonus
-    damage * hit_chance / target.hp
+    begin
+      hit_chance = (21 + attack_bonus - target.ac) / 20.0
+      damage = damage_dice.average + damage_bonus
+      damage * hit_chance / target.hp
+    rescue
+      binding.pry
+    end
   end
 
   def engage target
