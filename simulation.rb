@@ -1,5 +1,5 @@
 require 'require_all'
-require_relative 'characters/classes'
+require_all 'characters/classes'
 require_relative 'characters/monsters'
 require_relative 'actions/weapons'
 require_all 'actions/spells'

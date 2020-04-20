@@ -1,4 +1,4 @@
-require_relative '../action'
+require_relative '../../actions/action'
 
 class SecondWind < Action
   def evaluate
