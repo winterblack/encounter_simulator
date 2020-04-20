@@ -6,7 +6,12 @@ require_relative '../dice'
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :ranged
+  attr_reader :ability, :attack_bonus, :damage_dice, :ranged, :finesse
+  attr_accessor :sneak_attack
+
+  def weapon
+    true
+  end
 
   def evaluate
     value, target = choose_target
@@ -15,11 +20,13 @@ class Weapon < Action
 
   def perform
     value, target = choose_target
+    engage target unless ranged
     hit, crit = roll_to_hit target
     if hit
       damage = damage_dice.roll(crit) + damage_bonus
-      p "#{character.name} crits!" if crit
-      p "#{character.name} deals #{damage} damage to #{target.name} with #{self.class}."
+      sneaking = sneaking? target
+      damage += sneak_attack.roll(crit) if sneaking
+      p "#{"#{character.name} sneak attacks! " if sneaking}#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with #{self.class}."
       target.take damage
     else
       p "#{character.name} misses #{target.name}."
@@ -27,6 +34,10 @@ class Weapon < Action
   end
 
   private
+
+  def sneaking? target
+    sneak_attack && target.engaged.count > 0
+  end
 
   def choose_target
     max_value = 0
@@ -43,6 +54,11 @@ class Weapon < Action
       end
     end
     [max_value, best_target]
+  end
+
+  def engage target
+    character.engaged << target unless character.engaged.include? target
+    target.engaged << character unless target.engaged.include? character
   end
 end
 

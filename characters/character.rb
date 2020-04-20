@@ -3,6 +3,7 @@ class Character
   attr_reader :name, :pc, :level, :ac, :actions, :hp, :proficiency_bonus
   attr_reader :melee
   attr_accessor :initiative, :allies, :foes, :current_hp, :dead
+  attr_accessor :engaged
 
   def initialize options={}
     @name = options[:name]
@@ -15,6 +16,7 @@ class Character
     @int = options[:int] || 0
     @wis = options[:wis] || 0
     @cha = options[:cha] || 0
+    @engaged = []
   end
 
   def roll_initiative
@@ -63,6 +65,8 @@ class Character
   def die
     self.dead = true
     self.current_hp = 0
+    self.engaged.each { |character| character.engaged.delete self }
+    self.engaged = []
     p "#{name} is dead."
   end
 
