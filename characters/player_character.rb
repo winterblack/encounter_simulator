@@ -1,5 +1,6 @@
 module PlayerCharacter
   attr_accessor :dying, :death_saves, :stable
+  attr_reader :spell_slots
   def initialize options
     super options
     @pc = true
@@ -24,7 +25,7 @@ module PlayerCharacter
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
   private

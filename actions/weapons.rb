@@ -14,12 +14,13 @@ class Weapon < Action
   end
 
   def evaluate
-    value, target = choose_target
-    value
+    target = choose_target
+    evaluate_target target
   end
 
   def perform
-    value, target = choose_target
+    target = choose_target
+    binding.pry unless target
     engage target unless ranged
     hit, crit = roll_to_hit target
     if hit
@@ -40,20 +41,15 @@ class Weapon < Action
   end
 
   def choose_target
-    max_value = 0
-    best_target = nil
     targets = character.foes.select(&:standing)
     targets = targets.select(&:melee) if targets.any?(&:melee) && !ranged
-    targets.each do |target|
-      hit_chance = (21 + attack_bonus - target.ac) / 20.0
-      damage = damage_dice.average + damage_bonus
-      value = damage * hit_chance / target.hp
-      if value > max_value
-        max_value = value
-        best_target = target
-      end
-    end
-    [max_value, best_target]
+    targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
+  end
+
+  def evaluate_target target
+    hit_chance = (21 + attack_bonus - target.ac) / 20.0
+    damage = damage_dice.average + damage_bonus
+    damage * hit_chance / target.hp
   end
 
   def engage target

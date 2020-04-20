@@ -2,6 +2,6 @@ class Action
   attr_accessor :character
 
   def weapon
-    false 
+    false
   end
 end

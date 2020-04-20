@@ -1,7 +1,8 @@
+require 'require_all'
 require_relative 'characters/classes'
 require_relative 'characters/monsters'
 require_relative 'actions/weapons'
-require_relative 'actions/spells'
+require_all 'actions/spells'
 require_relative 'encounter'
 
 fighter = Fighter.new(
@@ -11,7 +12,7 @@ fighter = Fighter.new(
   dex: +2,
   con: +3,
   ac: 16, #chain mail
-  actions: [Greatsword.new],
+  actions: [Greatsword.new]
 )
 
 rogue = Rogue.new(
@@ -21,7 +22,7 @@ rogue = Rogue.new(
   con: +3,
   int: +2,
   ac: 14, #leather
-  actions: [LightCrossbow.new],
+  actions: [LightCrossbow.new]
 )
 
 wizard = Wizard.new(
@@ -34,7 +35,7 @@ wizard = Wizard.new(
   actions: [
     LightCrossbow.new,
     BurningHands.new,
-  ]
+  ],
 )
 
 cleric = Cleric.new(
@@ -45,6 +46,7 @@ cleric = Cleric.new(
   wis: +3,
   ac: 18, #chain mail, shield
   actions: [Mace.new],
+  bonus_actions: [HealingWord.new]
 )
 
 party = [fighter, rogue, wizard, cleric]
@@ -54,6 +56,8 @@ orcs = []
 4.times { |i| orcs << Orc.new(name: "Orc #{i+1}") }
 
 characters = party + orcs
+
+characters.each { |character| p character }
 
 Encounter.new(characters).run
 
