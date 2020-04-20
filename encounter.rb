@@ -1,10 +1,12 @@
 require_relative 'outcome'
 
 class Encounter
+  attr_accessor :round
   attr_reader :characters
 
   def initialize characters
     @characters = characters
+    @round = 0
     characters.each &:roll_initiative
     assign_allies_and_foes
   end
@@ -13,10 +15,12 @@ class Encounter
     until over
       play_round
     end
-    return Outcome.new characters
+    return Outcome.new self
   end
 
   def play_round
+    @round += 1
+    print "\nRound #{round}\n"
     characters.sort_by(&:initiative).reverse.each do |character|
       character.take_turn unless character.dead
       break if over

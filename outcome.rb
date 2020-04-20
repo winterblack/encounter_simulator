@@ -1,36 +1,21 @@
 class Outcome
-  attr_reader :tpk, :spell_slots_used, :remaining_hp, :character_deaths, :characters
-  def initialize characters
-    @characters = characters
-    @tpk = tpk?
-    @spell_slots_used = spell_slots_used?
+  attr_reader :encounter, :remaining_hp, :deaths, :standing, :rounds
+  def initialize encounter
+    @encounter = encounter
     @remaining_hp = remaining_hp?
-    @character_deaths = party.count(&:dead)
+    @deaths = tpk? ? party.count : party.count(&:dead)
+    @standing = party.count(&:standing)
+    @rounds = encounter.round
   end
 
   private
 
   def party
-    @party ||= characters.select &:pc
+    @party ||= encounter.characters.select &:pc
   end
 
   def tpk?
     party.none?(&:standing)
-  end
-
-  def spell_slots_used?
-    return 0 if tpk?
-    spellcasters = party.select &:spell_slots
-    return 0 if spellcasters.none?
-    spell_slots = spellcasters.map &:spell_slots
-    spell_slots_remaining = spellcasters.map &:spell_slots_remaining
-    total_spell_slots = spell_slots.reduce(0) do |slots, spell_slots|
-      slots + spell_slots.values.reduce(:+)
-    end
-    total_spell_slots_remaining = spell_slots_remaining.reduce(0) do |slots, spell_slots|
-      slots + spell_slots.values.reduce(:+)
-    end
-    (total_spell_slots - total_spell_slots_remaining) / total_spell_slots.to_f
   end
 
   def remaining_hp?

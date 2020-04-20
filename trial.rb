@@ -2,16 +2,16 @@ require_relative 'encounter'
 
 class Trial
   attr_accessor :outcomes
-  attr_reader :characters, :number
+  attr_reader :characters, :count
 
-  def initialize characters, number
+  def initialize characters, count
     @characters = characters
-    @number = number
+    @count = count
     @outcomes = []
   end
 
   def run
-    number.times do
+    count.times do
       outcomes << Encounter.new(characters).run
       characters.each(&:reset)
     end
@@ -21,19 +21,34 @@ class Trial
   private
 
   def calculate_averages
-    average_spell_slots_used = outcomes.map(&:spell_slots_used).reduce(:+) / number
-    average_remaining_hp = outcomes.map(&:remaining_hp).reduce(:+) / number
-    average_character_deaths = outcomes.map(&:character_deaths).reduce(:+) / number.to_f
-    average_tpks = outcomes.count(&:tpk) / number.to_f
-    one_character_death = outcomes.map(&:character_deaths).count(1) / number.to_f
-    two_character_death = outcomes.map(&:character_deaths).count(2) / number.to_f
-    three_character_death = outcomes.map(&:character_deaths).count(3) / number.to_f
-    p "Average spell slots used: #{(average_spell_slots_used * 100).round}%"
-    p "Average remaining hp: #{(average_remaining_hp * 100).round}%"
-    p "Average TPKs: #{(average_tpks * 100).round}%"
-    p "One character death: #{(one_character_death * 100).round}%"
-    p "Two character deaths: #{(two_character_death * 100).round}%"
-    p "Three character deaths: #{(three_character_death * 100).round}%"
-    binding.pry
+    average_rounds = (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
+    average_hp_remaining = outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
+    no_deaths = outcomes.select { |outcome| outcome.deaths == 0 }.count
+    one_death = outcomes.select { |outcome| outcome.deaths == 1 }.count
+    two_death = outcomes.select { |outcome| outcome.deaths == 2 }.count
+    three_death = outcomes.select { |outcome| outcome.deaths == 3 }.count
+    three_standing = outcomes.select { |outcome| outcome.standing == 3 }.count
+    two_standing = outcomes.select { |outcome| outcome.standing == 2 }.count
+    one_standing = outcomes.select { |outcome| outcome.standing == 1 }.count
+    tpks = outcomes.select { |outcome| outcome.standing == 0 }.count
+    no_death_chance = no_deaths / count.to_f
+    one_death_chance = one_death / count.to_f
+    two_death_chance = two_death / count.to_f
+    three_death_chance = three_death / count.to_f
+    three_standing_chance = three_standing / count.to_f
+    two_standing_chance = two_standing / count.to_f
+    one_standing_chance = one_standing / count.to_f
+    tpk_chance = tpks / count.to_f
+
+    print "\nAverage rounds: #{average_rounds}\n"
+    print "\nAverage HP remaining: #{(average_hp_remaining * 100).round}%\n"
+    print "\nChance of no character deaths: #{(no_death_chance * 100).round}%\n"
+    # print "\nChance of one character death: #{(one_death_chance * 100).round}%\n"
+    # print "\nChance of two character deaths: #{(two_death_chance * 100).round}%\n"
+    # print "\nChance of three character deaths: #{(three_death_chance * 100).round}%\n"
+    # print "\nChance of three characters standing: #{(three_standing_chance * 100).round}%\n"
+    # print "\nChance of two characters standing: #{(two_standing_chance * 100).round}%\n"
+    # print "\nChance of one character standing: #{(one_standing_chance * 100).round}%\n"
+    print "\nChance of TPK: #{(tpk_chance * 100).round}%\n"
   end
 end
