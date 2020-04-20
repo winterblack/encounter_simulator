@@ -19,6 +19,6 @@ class Orc < Monster
     @cha = 0
     @proficiency_bonus = +2
     @melee = true
-    equip_actions
+    equip_weapons
   end
 end

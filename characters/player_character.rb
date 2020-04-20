@@ -1,5 +1,3 @@
-require_relative 'character'
-
 module PlayerCharacter
   attr_accessor :dying, :death_saves, :stable
   def initialize options
@@ -7,7 +5,7 @@ module PlayerCharacter
     @pc = true
     @death_saves = []
     set_proficiency_bonus
-    equip_actions
+    equip_weapons
     set_starting_hp
   end
 
@@ -77,7 +75,7 @@ module PlayerCharacter
   end
 
   def set_starting_hp
-    hd_type = self.class::HD_TYPE
+    hd_type = self.class::HD_Type
     @hp = hd_type + (hd_type / 2 + 1) * (level - 1) + con * level
     @current_hp = hp
   end

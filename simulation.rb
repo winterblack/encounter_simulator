@@ -1,6 +1,7 @@
 require_relative 'characters/classes'
 require_relative 'characters/monsters'
 require_relative 'actions/weapons'
+require_relative 'actions/spells'
 require_relative 'encounter'
 
 fighter = Fighter.new(
@@ -30,7 +31,10 @@ wizard = Wizard.new(
   con: +2,
   int: +3,
   ac: 13, #unarmored
-  actions: [LightCrossbow.new],
+  actions: [
+    LightCrossbow.new,
+    BurningHands.new,
+  ]
 )
 
 cleric = Cleric.new(

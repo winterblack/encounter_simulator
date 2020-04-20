@@ -1,42 +1,24 @@
 require_relative 'character'
 require_relative 'player_character'
+require_relative 'spellcaster'
 
-class Spellcaster < Character
-  def initialize options
-    super(options)
-    set_spell_attack_bonus
-    set_spell_save_dc
-    set_spell_slots
-  end
-
-  private
-
-  def set_spell_attack_bonus
-  end
-
-  def set_spell_save_dc
-  end
-
-  def set_spell_slots
-  end
-end
-
-class Cleric < Spellcaster
+class Cleric < Character
   include PlayerCharacter
-  HD_TYPE = 8
+  include Spellcaster
+  HD_Type = 8
+  SpellAbility = :wis
 
   def initialize options
     super(options)
     @melee = options[:melee] || true
     @save_proficiencies = [:wis, :cha]
-    @spell_ability = :wis
   end
 
 end
 
 class Fighter < Character
   include PlayerCharacter
-  HD_TYPE = 10
+  HD_Type = 10
 
   def initialize options
     super(options)
@@ -47,7 +29,7 @@ end
 
 class Rogue < Character
   include PlayerCharacter
-  HD_TYPE = 8
+  HD_Type = 8
 
   def initialize options
     super(options)
@@ -67,14 +49,16 @@ class Rogue < Character
   end
 end
 
-class Wizard < Spellcaster
+class Wizard < Character
   include PlayerCharacter
-  HD_TYPE = 6
+  include Spellcaster
+  HD_Type = 6
+  SpellAbility = :int
 
   def initialize options
     super(options)
     @melee = options[:melee] || false
     @save_proficiencies = [:int, :wis]
-    @spell_ability = :int
   end
+
 end

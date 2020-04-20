@@ -1,7 +1,7 @@
 class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
   attr_reader :name, :pc, :level, :ac, :actions, :hp, :proficiency_bonus
-  attr_reader :melee
+  attr_reader :melee, :save_proficiencies
   attr_accessor :initiative, :allies, :foes, :current_hp, :dead
   attr_accessor :engaged
 
@@ -17,11 +17,20 @@ class Character
     @wis = options[:wis] || 0
     @cha = options[:cha] || 0
     @engaged = []
+    @save_proficiencies = []
   end
 
   def roll_initiative
     self.initiative = D20.roll + dex
     p "#{name} rolled #{initiative} initiative."
+  end
+
+  def roll_save ability
+    if save_proficiencies.include? ability
+      D20.roll + send(ability) + proficiency_bonus
+    else
+      D20.roll + send(ability)
+    end
   end
 
   def take_turn
@@ -70,16 +79,12 @@ class Character
     p "#{name} is dead."
   end
 
-  def equip_actions
-    actions.each do |action|
-      action.character = self
-      ability_bonus = send action.ability
-      if action.respond_to? :attack_bonus
-        action.attack_bonus = ability_bonus + proficiency_bonus
-      end
-      if action.respond_to? :damage_bonus
-        action.damage_bonus = ability_bonus
-      end
+  def equip_weapons
+    actions.each { |action| action.character = self }
+    actions.select(&:weapon).each do |weapon|
+      ability_bonus = send weapon.ability
+      weapon.attack_bonus = ability_bonus + proficiency_bonus
+      weapon.damage_bonus = ability_bonus
     end
   end
 end
