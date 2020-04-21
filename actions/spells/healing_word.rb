@@ -21,7 +21,7 @@ class HealingWord < Spell
   private
 
   def roll_healing
-    healing_dice.roll + character.spell_ability_score
+    healing_dice.roll + character.spell_ability_score + life_domain_bonus
   end
 
   def healing_dice
@@ -29,7 +29,11 @@ class HealingWord < Spell
   end
 
   def average_healing
-    healing_dice.average + character.spell_ability_score
+    healing_dice.average + character.spell_ability_score + life_domain_bonus
+  end
+
+  def life_domain_bonus
+    character.domain == :life ? 3 : 0
   end
 
   def choose_target

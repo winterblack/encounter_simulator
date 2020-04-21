@@ -30,10 +30,10 @@ class Trial
   end
 
   def calculate_averages
-    # average_rounds = (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
-    # rounds_min = outcomes.map(&:rounds).min
-    # rounds_max = outcomes.map(&:rounds).max
-    # average_hp_remaining = outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
+    average_rounds = (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
+    rounds_min = outcomes.map(&:rounds).min
+    rounds_max = outcomes.map(&:rounds).max
+    average_hp_remaining = outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
 
     # one_death = outcomes.select { |outcome| outcome.deaths == 1 }.count
     # two_death = outcomes.select { |outcome| outcome.deaths == 2 }.count
@@ -48,10 +48,6 @@ class Trial
     # two_standing_chance = two_standing / count.to_f
     # one_standing_chance = one_standing / count.to_f
 
-    # print "\nAverage rounds: #{average_rounds}"
-    # print "\nMinimum rounds: #{rounds_min}"
-    # print "\nMaximum rounds: #{rounds_max}"
-    # print "\nAverage HP remaining: #{(average_hp_remaining * 100).round(2)}%"
 
     # print "\nChance of one character death: #{(one_death_chance * 100).round}%\n"
     # print "\nChance of two character deaths: #{(two_death_chance * 100).round}%\n"
@@ -60,7 +56,12 @@ class Trial
     # print "\nChance of two characters standing: #{(two_standing_chance * 100).round}%\n"
     # print "\nChance of one character standing: #{(one_standing_chance * 100).round}%\n"
 
-    print "\nClasses: #{characters.map &:class}"
+    print "\nRan the encounter #{count} times."
+    print "\nClasses: #{characters.select(&:pc?).map &:class}"
+    print "\nAverage rounds: #{average_rounds}"
+    print "\nMinimum rounds: #{rounds_min}"
+    print "\nMaximum rounds: #{rounds_max}"
+    print "\nAverage HP remaining: #{(average_hp_remaining * 100).round(2)}%"
     print "\nChance of no character deaths: #{(no_death_chance() * 100).round(2)}%"
     print "\nChance of TPK: #{(tpk_chance() * 100).round(2)}%\n"
   end

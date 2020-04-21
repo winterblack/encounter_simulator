@@ -4,7 +4,7 @@ require_all 'actions/spells'
 
 module Spellcaster
   attr_accessor :spell_slots, :spell_slots_remaining
-  attr_reader :spell_ability, :spell_ability_score, :spells
+  attr_reader :spell_ability, :spell_ability_score, :spells, :domain
   SPELL_SLOTS_BY_LEVEL = {
     1  => { 1 => 2 },
     2  => { 1 => 3 },

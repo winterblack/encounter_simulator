@@ -12,5 +12,6 @@ class Cleric < Character
     super(options)
     @melee = options[:melee] || true
     @save_proficiencies = [:wis, :cha]
+    @domain = options[:domain]
   end
 end
