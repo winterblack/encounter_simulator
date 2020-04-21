@@ -2,10 +2,10 @@ require_relative '../actions/weapon'
 
 class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
-  attr_reader :name, :pc, :level, :ac, :actions, :hp, :proficiency_bonus
-  attr_reader :melee, :save_proficiencies, :bonus_actions, :weapons
-  attr_accessor :initiative, :allies, :foes, :current_hp, :dead
-  attr_accessor :engaged
+  attr_reader :name, :level, :ac, :hp, :proficiency_bonus, :melee
+  attr_reader :save_proficiencies, :weapons
+  attr_accessor :actions, :bonus_actions, :allies, :foes, :engaged
+  attr_accessor :initiative, :current_hp, :dead
 
   def initialize options={}
     @options = options
@@ -18,7 +18,7 @@ class Character
     @int = options[:int] || 0
     @wis = options[:wis] || 0
     @cha = options[:cha] || 0
-    @weapons = options[:weapons] || []
+    @weapons = options[:weapons]
     @actions = []
     @bonus_actions = []
     @engaged = []
@@ -49,7 +49,7 @@ class Character
   def take damage
     self.current_hp -= damage
     p "#{name} has #{current_hp} hp remaining" if current_hp > 0
-    check_if_dead unless pc
+    check_if_dead unless pc?
   end
 
   def heal healing
@@ -74,8 +74,8 @@ class Character
     actions.max { |a, b| a.evaluate <=> b.evaluate }
   end
 
-  def over
-    allies.none?(&:standing) || foes.none?(&:standing)
+  def pc?
+    self.class.included_modules.include?(PlayerCharacter)
   end
 
   private
@@ -96,22 +96,14 @@ class Character
     p "#{name} dies!"
   end
 
-  def forge_weapons
-    weapons.each do |weapon|
-      self.actions << Weapon.forge(weapon)
-    end
-  end
-
   def equip_weapons
-    actions.select(&:weapon).each do |weapon|
+    weapons.each do |symbol|
+      weapon = Weapon.forge(symbol)
+      self.actions << weapon
       ability_bonus = send weapon.ability
       weapon.attack_bonus = ability_bonus + proficiency_bonus
       weapon.damage_bonus = ability_bonus
+      weapon.character = self
     end
-  end
-
-  def assign_self_to_actions
-    actions.each { |action| action.character = self }
-    bonus_actions.each { |action| action.character = self }
   end
 end

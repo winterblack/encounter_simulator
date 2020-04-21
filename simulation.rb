@@ -12,7 +12,7 @@ fighter = Fighter.new(
   con: +3,
   ac: 16, #chain mail
   weapons: [:greatsword],
-  fighting_styles: [:defense]
+  fighting_styles: [:great_weapon_fighting]
 )
 
 rogue = Rogue.new(

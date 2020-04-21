@@ -17,8 +17,6 @@ class Orc < Monster
     @proficiency_bonus = +2
     @melee = true
     @weapons = [:greataxe]
-    forge_weapons
     equip_weapons
-    assign_self_to_actions
   end
 end

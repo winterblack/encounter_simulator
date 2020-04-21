@@ -7,9 +7,7 @@ module PlayerCharacter
     @death_saves = []
     set_proficiency_bonus
     set_starting_hp
-    forge_weapons
     equip_weapons
-    assign_self_to_actions
   end
 
   def take_turn

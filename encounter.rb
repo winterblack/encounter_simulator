@@ -17,7 +17,7 @@ class Encounter
     until over
       play_round
     end
-    
+
     if party.none?(&:standing)
       print "\nTPK\n"
     else
@@ -38,19 +38,19 @@ class Encounter
   private
 
   def party
-    @party ||= characters.select(&:pc)
+    @party ||= characters.select(&:pc?)
   end
 
   def assign_allies_and_foes
-    pcs = characters.select &:pc
-    monsters = characters.reject &:pc
+    party = characters.select &:pc?
+    monsters = characters.reject &:pc?
     characters.each do |character|
-      character.allies = character.pc ? pcs : monsters
-      character.foes = character.pc ? monsters : pcs
+      character.allies = character.pc? ? party : monsters
+      character.foes = character.pc? ? monsters : party
     end
   end
 
   def over
-    characters.select(&:pc).none?(&:standing) || characters.reject(&:pc).none?(&:standing)
+    characters.select(&:pc?).none?(&:standing) || characters.reject(&:pc?).none?(&:standing)
   end
 end

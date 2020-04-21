@@ -11,7 +11,7 @@ class Outcome
   private
 
   def party
-    @party ||= encounter.characters.select &:pc
+    @party ||= encounter.characters.select &:pc?
   end
 
   def tpk?
