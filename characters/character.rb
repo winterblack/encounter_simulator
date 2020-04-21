@@ -88,7 +88,6 @@ class Character
   private
 
   def choose_action
-    binding.pry if self.class == Wizard && engaged.any? && spell_slots_remaining[1] == 0
     actions.max { |a, b| a.evaluate <=> b.evaluate }
   end
 
