@@ -1,8 +1,10 @@
+require 'require_all'
 require_relative 'character'
+require_all 'actions/spells'
 
 module Spellcaster
   attr_accessor :spell_slots, :spell_slots_remaining
-  attr_reader :spell_ability, :spell_ability_score
+  attr_reader :spell_ability, :spell_ability_score, :spells
   SPELL_SLOTS_BY_LEVEL = {
     1  => { 1 => 2 },
     2  => { 1 => 3 },
@@ -28,14 +30,11 @@ module Spellcaster
   def initialize options
     super(options)
     @spell_ability_score = send self.class::SpellAbility
+    @spells = options[:spells]
+    memorize_spells
     set_spell_attack_bonus
     set_spell_save_dc
     set_spell_slots
-  end
-
-  def reset
-    super
-    self.spell_slots_remaining = spell_slots.clone
   end
 
   private
@@ -53,5 +52,12 @@ module Spellcaster
   def set_spell_slots
     self.spell_slots = SPELL_SLOTS_BY_LEVEL[level].clone
     self.spell_slots_remaining = SPELL_SLOTS_BY_LEVEL[level].clone
+  end
+
+  def memorize_spells
+    self.actions << BurningHands.new if spells.include? :burning_hands
+    self.bonus_actions << HealingWord.new if spells.include? :healing_word
+    actions.each { |action| action.character = self }
+    bonus_actions.each { |action| action.character = self }
   end
 end

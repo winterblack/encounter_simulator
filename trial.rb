@@ -13,7 +13,7 @@ class Trial
   def run
     count.times do
       outcomes << Encounter.new(characters).run
-      characters.each(&:reset)
+      characters.map!(&:renew)
     end
     calculate_averages
   end
@@ -45,14 +45,14 @@ class Trial
     print "\nAverage rounds: #{average_rounds}\n"
     print "\nMinimum rounds: #{rounds_min}\n"
     print "\nMaximum rounds: #{rounds_max}\n"
-    print "\nAverage HP remaining: #{(average_hp_remaining * 100).round}%\n"
-    print "\nChance of no character deaths: #{(no_death_chance * 100).round}%\n"
+    print "\nAverage HP remaining: #{(average_hp_remaining * 100).round(2)}%\n"
+    print "\nChance of no character deaths: #{(no_death_chance * 100).round(2)}%\n"
     # print "\nChance of one character death: #{(one_death_chance * 100).round}%\n"
     # print "\nChance of two character deaths: #{(two_death_chance * 100).round}%\n"
     # print "\nChance of three character deaths: #{(three_death_chance * 100).round}%\n"
     # print "\nChance of three characters standing: #{(three_standing_chance * 100).round}%\n"
     # print "\nChance of two characters standing: #{(two_standing_chance * 100).round}%\n"
     # print "\nChance of one character standing: #{(one_standing_chance * 100).round}%\n"
-    print "\nChance of TPK: #{(tpk_chance * 100).round}%\n"
+    print "\nChance of TPK: #{(tpk_chance * 100).round(2)}%\n"
   end
 end

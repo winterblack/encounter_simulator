@@ -6,8 +6,10 @@ module PlayerCharacter
     @pc = true
     @death_saves = []
     set_proficiency_bonus
-    equip_weapons
     set_starting_hp
+    forge_weapons
+    equip_weapons
+    assign_self_to_actions
   end
 
   def take_turn
@@ -33,13 +35,6 @@ module PlayerCharacter
 
   def inspect
     "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots_remaining}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
-  end
-
-  def reset
-    super
-    self.dying = false
-    self.stable = false
-    self.death_saves = []
   end
 
   private

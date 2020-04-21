@@ -13,8 +13,15 @@ class Encounter
 
   def run
     print "\nNew Encounter\n"
+
     until over
       play_round
+    end
+    
+    if party.none?(&:standing)
+      print "\nTPK\n"
+    else
+      print "\nThe party was victorious. #{party.count(&:dead)} characters died.\n"
     end
     return Outcome.new self
   end
@@ -29,6 +36,10 @@ class Encounter
   end
 
   private
+
+  def party
+    @party ||= characters.select(&:pc)
+  end
 
   def assign_allies_and_foes
     pcs = characters.select &:pc

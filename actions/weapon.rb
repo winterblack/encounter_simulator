@@ -6,26 +6,27 @@ require_relative '../dice'
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged
-  attr_accessor :sneak_attack
+  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great
+  attr_accessor :sneak_attack, :gwf
 
   def initialize name, ability, damage, options={}
     @name = name.to_s.sub('_', ' ')
     @ability = ability
     @damage_dice = Dice damage
     @ranged = options[:ranged]
+    @great = options[:great]
   end
 
   def self.forge weapon
     case weapon
     when :greatsword
-      self.new weapon, :str, '2d6'
+      self.new weapon, :str, '2d6', great: true
     when :light_crossbow
       self.new weapon, :dex, '1d8', ranged: true
     when :mace
       self.new weapon, :str, '1d6'
     when :greataxe
-      self.new weapon, :str, '1d12'
+      self.new weapon, :str, '1d12', great: true
     end
   end
 
@@ -43,7 +44,7 @@ class Weapon < Action
     engage target unless ranged
     hit, crit = roll_to_hit target
     if hit
-      damage = damage_dice.roll(crit) + damage_bonus
+      damage = damage_dice.roll(crit, gwf: gwf) + damage_bonus
       sneaking = sneaking? target
       damage += sneak_attack.roll(crit) if sneaking
       p "#{"#{character.name} sneak attacks! " if sneaking}#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with a #{name}."
@@ -66,13 +67,9 @@ class Weapon < Action
   end
 
   def evaluate_target target
-    begin
-      hit_chance = (21 + attack_bonus - target.ac) / 20.0
-      damage = damage_dice.average + damage_bonus
-      damage * hit_chance / target.hp
-    rescue
-      binding.pry
-    end
+    hit_chance = (21 + attack_bonus - target.ac) / 20.0
+    damage = damage_dice.average + damage_bonus
+    damage * hit_chance / target.hp
   end
 
   def engage target
