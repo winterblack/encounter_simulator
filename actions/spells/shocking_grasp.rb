@@ -11,6 +11,7 @@ class ShockingGrasp < Spell
 
   def evaluate
     target = choose_target
+    return 0 if !target
     evaluate_target target
   end
 
@@ -35,8 +36,7 @@ class ShockingGrasp < Spell
   end
 
   def choose_target
-    targets = character.foes.select(&:standing).select(&:melee)
-    targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
+    character.engaged.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end
 
   def evaluate_target target

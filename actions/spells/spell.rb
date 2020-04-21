@@ -12,7 +12,7 @@ class Spell < Action
     return false if insufficeint_spell_slots
     character.spell_slots_remaining[spell_level] -= 1 unless spell_level == :cantrip
     p "#{character.name} casts #{self.class}!"
-    p "#{character.name} has #{character.spell_slots_remaining} spell slots remaining."
+    p "#{character.name} has #{character.spell_slots_remaining[1..-1]} spell slots remaining."
     true
   end
 
