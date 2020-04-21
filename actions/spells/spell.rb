@@ -10,7 +10,7 @@ class Spell < Action
 
   def perform
     return false if insufficeint_spell_slots
-    character.spell_slots_remaining[spell_level] -= 1
+    character.spell_slots_remaining[spell_level] -= 1 unless spell_level == :cantrip
     p "#{character.name} casts #{self.class}!"
     p "#{character.name} has #{character.spell_slots_remaining} spell slots remaining."
     true
@@ -23,6 +23,19 @@ class Spell < Action
   end
 
   def insufficeint_spell_slots
-    character.spell_slots_remaining[spell_level] == 0
+    character.spell_slots_remaining[spell_level] == 0 unless spell_level == :cantrip
+  end
+
+  def cantrip_dice
+    case character.level
+    when 1..4
+      1
+    when 5..10
+      2
+    when 11..16
+      3
+    when 17..20
+      4
+    end
   end
 end

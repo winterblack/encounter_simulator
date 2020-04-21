@@ -2,10 +2,10 @@ require_relative '../actions/weapon'
 
 class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
-  attr_reader :name, :level, :ac, :hp, :proficiency_bonus, :melee
-  attr_reader :save_proficiencies, :weapons
+  attr_reader :name, :level, :ac, :hp, :proficiency_bonus
+  attr_reader :save_proficiencies, :weapons, :metal_armor
   attr_accessor :actions, :bonus_actions, :allies, :foes, :engaged
-  attr_accessor :initiative, :current_hp, :dead
+  attr_accessor :initiative, :current_hp, :dead, :melee
 
   def initialize options={}
     @options = options
@@ -39,7 +39,6 @@ class Character
 
   def take_turn
     action = choose_action
-    binding.pry if !action
     action.perform
     return if foes.none?(&:standing)
     bonus_action = choose_bonus_action
@@ -70,15 +69,28 @@ class Character
     self.class.new @options
   end
 
-  def choose_action
-    actions.max { |a, b| a.evaluate <=> b.evaluate }
-  end
-
   def pc?
     self.class.included_modules.include?(PlayerCharacter)
   end
 
+  def engage target
+    self.melee = true
+    self.engaged << target unless self.engaged.include? target
+    target.engaged << self unless target.engaged.include? self
+  end
+
+
+  def disengage
+    self.engaged.each { |character| character.engaged.delete self }
+    self.engaged = []
+  end
+
   private
+
+  def choose_action
+    binding.pry if self.class == Wizard && engaged.any? && spell_slots_remaining[1] == 0
+    actions.max { |a, b| a.evaluate <=> b.evaluate }
+  end
 
   def choose_bonus_action
     bonus_actions.max { |a, b| a.evaluate <=> b.evaluate }
@@ -91,8 +103,7 @@ class Character
   def die
     self.dead = true
     self.current_hp = 0
-    self.engaged.each { |character| character.engaged.delete self }
-    self.engaged = []
+    disengage
     p "#{name} dies!"
   end
 

@@ -22,7 +22,7 @@ rogue = Rogue.new(
   con: +3,
   int: +2,
   ac: 14, #leather
-  weapons: [:light_crossbow]
+  weapons: [:light_crossbow, :shortsword]
 )
 
 wizard = Wizard.new(
@@ -33,7 +33,7 @@ wizard = Wizard.new(
   int: +3,
   ac: 13, #unarmored
   weapons: [:light_crossbow],
-  spells: [:burning_hands]
+  spells: [:burning_hands, :shocking_grasp]
 )
 
 cleric = Cleric.new(
@@ -54,4 +54,4 @@ orcs.map! { |name| Orc.new(name: name) }
 
 characters = party + orcs
 
-trial = Trial.new(characters, 100000).run
+trial = Trial.new(characters, 100).run

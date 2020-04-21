@@ -14,7 +14,7 @@ class Dice
   end
 
   def average
-    (count + count * type)/2
+    (count + count * type) / 2.0
   end
 
   private

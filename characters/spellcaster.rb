@@ -40,12 +40,16 @@ module Spellcaster
   private
 
   def set_spell_attack_bonus
+    attack_bonus = spell_ability_score + proficiency_bonus
+    actions.select(&:spell_attack).each do |spell|
+      spell.attack_bonus = attack_bonus
+    end
   end
 
   def set_spell_save_dc
     save_dc = 8 + proficiency_bonus + spell_ability_score
-    actions.each do |action|
-      action.save_dc = save_dc if action.respond_to? :save_dc
+    actions.select(&:save).each do |spell|
+      spell.save_dc = save_dc
     end
   end
 
@@ -56,6 +60,7 @@ module Spellcaster
 
   def memorize_spells
     self.actions << BurningHands.new if spells.include? :burning_hands
+    self.actions << ShockingGrasp.new if spells.include? :shocking_grasp
     self.bonus_actions << HealingWord.new if spells.include? :healing_word
     actions.each { |action| action.character = self }
     bonus_actions.each { |action| action.character = self }

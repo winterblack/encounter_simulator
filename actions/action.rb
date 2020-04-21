@@ -4,4 +4,12 @@ class Action
   def weapon
     false
   end
+
+  def save
+    false
+  end
+
+  def spell_attack
+    false
+  end
 end

@@ -6,7 +6,7 @@ require_relative '../dice'
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great
+  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great, :finesse
   attr_accessor :sneak_attack, :gwf
 
   def initialize name, ability, damage, options={}
@@ -15,6 +15,7 @@ class Weapon < Action
     @damage_dice = Dice damage
     @ranged = options[:ranged]
     @great = options[:great]
+    @finesse = options[:finesse]
   end
 
   def self.forge weapon
@@ -27,6 +28,8 @@ class Weapon < Action
       self.new weapon, :str, '1d6'
     when :greataxe
       self.new weapon, :str, '1d12', great: true
+    when :shortsword
+      self.new weapon, :dex, '1d6', finesse: true
     end
   end
 
@@ -41,8 +44,8 @@ class Weapon < Action
 
   def perform
     target = choose_target
-    engage target unless ranged
-    hit, crit = roll_to_hit target
+    character.engage target unless ranged
+    hit, crit = roll_to_hit target, check_for_disadvantage
     if hit
       damage = damage_dice.roll(crit, gwf: gwf) + damage_bonus
       sneaking = sneaking? target
@@ -56,24 +59,21 @@ class Weapon < Action
 
   private
 
+  def evaluate_target target
+    hit_chance = (21 + attack_bonus - target.ac) / 20.0
+    hit_chance = hit_chance**2 if check_for_disadvantage == :disadvantage
+    damage = damage_dice.average + damage_bonus
+    damage = damage * 0.7 if !ranged && !character.melee && !character.engaged
+    damage * hit_chance / target.hp
+  end
+
   def sneaking? target
     sneak_attack && target.engaged.count > 0
   end
 
   def choose_target
-    targets = character.foes.select(&:standing)
+    targets = character.foes.select &:standing
     targets = targets.select(&:melee) if targets.any?(&:melee) && !ranged
     targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
-  end
-
-  def evaluate_target target
-    hit_chance = (21 + attack_bonus - target.ac) / 20.0
-    damage = damage_dice.average + damage_bonus
-    damage * hit_chance / target.hp
-  end
-
-  def engage target
-    character.engaged << target unless character.engaged.include? target
-    target.engaged << character unless target.engaged.include? character
   end
 end
