@@ -6,7 +6,7 @@ require_relative '../dice'
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great, :finesse
+  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great
   attr_accessor :sneak_attack, :gwf
 
   def initialize name, ability, damage, options={}
@@ -29,7 +29,9 @@ class Weapon < Action
     when :greataxe
       self.new weapon, :str, '1d12', great: true
     when :shortsword
-      self.new weapon, :dex, '1d6', finesse: true
+      self.new weapon, :dex, '1d6'
+    when :dagger
+      self.new weapon, :dex, '1d4'
     end
   end
 
