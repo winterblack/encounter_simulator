@@ -2,7 +2,7 @@ require_relative '../actions/weapon'
 
 class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
-  attr_reader :name, :level, :ac, :hp, :proficiency_bonus, :metal_armor
+  attr_reader :name, :level, :ac, :hp, :proficiency_bonus
   attr_reader :save_proficiencies, :weapons
   attr_accessor :actions, :bonus_actions, :allies, :foes, :engaged
   attr_accessor :initiative, :current_hp, :dead, :melee

@@ -1,6 +1,6 @@
 require 'require_all'
 require_all 'characters/classes'
-require_relative 'characters/monsters'
+require_relative 'characters/monster'
 require_relative 'encounter'
 require_relative 'trial'
 
@@ -33,7 +33,7 @@ wizard = Wizard.new(
   int: +3,
   ac: 13, #unarmored
   weapons: [:light_crossbow, :dagger],
-  spells: [:burning_hands, :shocking_grasp]
+  spells: [:burning_hands]
 )
 
 cleric = Cleric.new(
@@ -51,11 +51,11 @@ cleric = Cleric.new(
 og_party = [fighter, rogue, wizard, cleric]
 
 orcs = ['Blackhand', 'Orgrim', 'Grommash', 'Aggralan']
-orcs.map! { |name| Orc.new(name: name) }
+orcs.map! { |name| Monster.new('orc') }
 
 characters = og_party + orcs
 
-Trial.new(characters, 100000).run
+Trial.new(characters, 1000).run
 # trials = []
 #
 # parties = og_party.repeated_combination(4).each do |party|
