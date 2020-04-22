@@ -2,7 +2,7 @@ require 'require_all'
 require_all 'characters/classes'
 require_relative 'characters/monster'
 require_relative 'encounter'
-require_relative 'trial'
+require_relative 'adventuring_day'
 
 fighter = Fighter.new(
   name: 'Tordek',
@@ -48,31 +48,12 @@ cleric = Cleric.new(
   domain: :life
 )
 
-Party = [fighter, rogue, wizard, cleric]
-orcs = Array.new(4).map { Monster.new 'Orc' }
+party = [fighter, rogue, wizard, cleric]
 
-def get_90 monster
-  n = 1
-  no_death_chance = 1.0
-  trials = []
-  until no_death_chance < 0.9
-    monsters = Array.new(n).map { Monster.new monster }
-    trials << Trial.new(Party + monsters, 1000).run
-    no_death_chance = trials.last.no_death_chance
-    n += 1
-  end
-  trials
-end
+encounters = []
+encounters << Encounter.new(Array.new(2) { Monster.new 'Kobold' })
+encounters << Encounter.new(Array.new(2) { Monster.new 'Goblin' })
+encounters << Encounter.new(Array.new(2) { Monster.new 'Orc' })
+encounters << Encounter.new(Array.new(2) { Monster.new 'Kobold' })
 
-kobolds = get_90 'Kobold'
-goblins = get_90 'Goblin'
-orcs = get_90 'Orc'
-bugbears = get_90 'Bugbear'
-ogres = get_90 'Ogre'
-
-kobolds[-2].print_results
-goblins[-2].print_results
-orcs[-2].print_results
-bugbears[-2].print_results
-ogres[-2]&.print_results
-ogres.last.print_results
+AdventuringDay.new(encounters, party).adventure

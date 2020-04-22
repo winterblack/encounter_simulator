@@ -33,20 +33,20 @@ class Character
     self.initiative = D20.roll + dex
   end
 
-  def roll_save ability
-    if save_proficiencies.include? ability
-      D20.roll + send(ability) + proficiency_bonus
-    else
-      D20.roll + send(ability)
-    end
-  end
-
   def take_turn
     action = choose_action
     action.perform
     return if foes.none?(&:standing)
     bonus_action = choose_bonus_action
     bonus_action.perform if bonus_action && bonus_action.evaluate > 0
+  end
+
+  def roll_save ability
+    if save_proficiencies.include? ability
+      D20.roll + send(ability) + proficiency_bonus
+    else
+      D20.roll + send(ability)
+    end
   end
 
   def take damage

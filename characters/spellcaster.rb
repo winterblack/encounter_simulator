@@ -56,8 +56,8 @@ module Spellcaster
   end
 
   def set_spell_slots
-    self.spell_slots = SpellSlotsByLevel[level].clone
-    self.spell_slots_remaining = SpellSlotsByLevel[level].clone
+    self.spell_slots = SpellSlotsByLevel[level].dup
+    self.spell_slots_remaining = SpellSlotsByLevel[level].dup
   end
 
   def memorize_spells

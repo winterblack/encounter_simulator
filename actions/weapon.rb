@@ -51,9 +51,10 @@ class Weapon < Action
   def evaluate_target target
     hit_chance = (21 + attack_bonus - target.ac) / 20.0
     hit_chance = hit_chance**2 if advantage? == :disadvantage
+    hit_chance = 1 - (1 - hit_chance**2) if advantage? == :advantage
     damage = damage_dice.average + damage_bonus
     damage = damage * 0.7 if !ranged && !character.melee && !character.engaged
-    damage * hit_chance / target.hp
+    damage * hit_chance / target.current_hp
   end
 
   def sneaking? target

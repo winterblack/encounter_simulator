@@ -1,60 +1,55 @@
-require_relative 'outcome'
-
 class Encounter
+  attr_reader :monsters, :party
   attr_accessor :round
-  attr_reader :characters
 
-  def initialize characters, options={}
-    @characters = characters
+  def initialize monsters
+    @monsters = monsters
     @round = 0
-    @daylight = options[:daylight]
-    assign_allies_and_foes
   end
 
-  def run
-    characters.each &:roll_initiative
+  def run party
     print "\nNew Encounter\n"
 
-    binding.pry if round == 0 && over
-
-    until over
-      play_round
-    end
-
-    if party.none?(&:standing)
-      print "\nTPK\n"
-    else
-      print "\nThe party was victorious. #{party.count(&:dead)} characters died.\n"
-    end
-
-    return Outcome.new self
+    @party = party
+    assign_allies_and_foes
+    characters.each &:roll_initiative
+    play_round until over
   end
 
   def play_round
     @round += 1
+
     print "\nRound #{round}\n"
+
     characters.sort_by(&:initiative).reverse.each do |character|
       character.take_turn unless character.dead
       break if over
     end
+
+    if party.none? &:standing
+      print "\nTPK\n"
+    else
+      print "\nThe party was victorious. #{party.count &:dead} characters died.\n"
+    end
+
   end
 
   private
 
-  def party
-    @party ||= characters.select(&:pc?)
+  def characters
+    @characters ||= monsters + party
   end
 
   def assign_allies_and_foes
-    party = characters.select &:pc?
-    monsters = characters.reject &:pc?
-    characters.each do |character|
-      character.allies = character.pc? ? party : monsters
-      character.foes = character.pc? ? monsters : party
+    party.each do |character|
+      character.allies = party && character.foes = monsters
+    end
+    monsters.each do |character|
+      character.allies = monsters && character.foes = party
     end
   end
 
   def over
-    characters.select(&:pc?).none?(&:standing) || characters.reject(&:pc?).none?(&:standing)
+    party.none?(&:standing) || monsters.none?(&:standing)
   end
 end

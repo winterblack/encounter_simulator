@@ -1,5 +1,5 @@
 module PlayerCharacter
-  attr_accessor :dying, :death_saves, :stable
+  attr_accessor :dying, :death_saves, :stable, :hit_dice
   attr_reader :spell_slots
   def initialize options
     super options
@@ -13,6 +13,11 @@ module PlayerCharacter
   def take_turn
     return roll_death_save if dying
     super
+  end
+
+  def short_rest
+    return unless current_hp > 0
+    roll_hit_die until hit_dice.empty? || current_hp == hp
   end
 
   def take damage
@@ -32,10 +37,14 @@ module PlayerCharacter
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots_remaining}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots_remaining[1..-1]}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
   private
+
+  def roll_hit_die
+    heal(hit_dice.pop.roll + con)
+  end
 
   def check_if_dying
     if current_hp < 1
@@ -87,5 +96,6 @@ module PlayerCharacter
     hd_type = self.class::HD_Type
     @hp = hd_type + (hd_type / 2 + 1) * (level - 1) + con * level
     @current_hp = hp
+    @hit_dice = Array.new(level) { Dice.new "1d#{hd_type}" }
   end
 end

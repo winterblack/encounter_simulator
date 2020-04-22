@@ -20,6 +20,11 @@ class Fighter < Character
     train_fighting_styles
   end
 
+  def short_rest
+    super
+    self.second_wind_used = false
+  end
+
   def train_fighting_styles
     case
     when fighting_styles.include?(:defense)
@@ -36,6 +41,6 @@ class Fighter < Character
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{" death_saves=#{death_saves}" if !standing}#{' second wind used' if second_wind_used}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "<#{name} hp=#{current_hp}#{" death_saves=#{death_saves}" if !standing}#{' second_wind_used' if second_wind_used}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 end
