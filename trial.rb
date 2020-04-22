@@ -12,10 +12,10 @@ class Trial
 
   def run
     count.times do
-      outcomes << Encounter.new(characters).run
       characters.map!(&:renew)
+      outcomes << Encounter.new(characters).run
     end
-    calculate_averages
+    print_results
     self
   end
 
@@ -29,7 +29,7 @@ class Trial
     tpks / count.to_f
   end
 
-  def calculate_averages
+  def print_results
     average_rounds = (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
     rounds_min = outcomes.map(&:rounds).min
     rounds_max = outcomes.map(&:rounds).max
@@ -58,6 +58,7 @@ class Trial
 
     print "\nRan the encounter #{count} times."
     print "\nClasses: #{characters.select(&:pc?).map &:class}"
+    print "\nMonsters: #{characters.reject(&:pc?).map &:monster}"
     print "\nAverage rounds: #{average_rounds}"
     print "\nMinimum rounds: #{rounds_min}"
     print "\nMaximum rounds: #{rounds_max}"

@@ -1,5 +1,6 @@
 class Dice
-  attr_reader :count, :type
+  attr_accessor :count
+  attr_reader :type
 
   def initialize expression
     parts = expression.split(/[d]/).map!(&:to_i)

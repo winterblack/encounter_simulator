@@ -11,7 +11,7 @@ fighter = Fighter.new(
   dex: +2,
   con: +3,
   ac: 16, #chain mail
-  weapons: [:greatsword],
+  weapons: ['greatsword'],
   fighting_styles: [:great_weapon_fighting]
 )
 
@@ -22,7 +22,7 @@ rogue = Rogue.new(
   con: +3,
   int: +2,
   ac: 14, #leather
-  weapons: [:light_crossbow, :shortsword]
+  weapons: ['light crossbow', 'shortsword']
 )
 
 wizard = Wizard.new(
@@ -32,7 +32,7 @@ wizard = Wizard.new(
   con: +2,
   int: +3,
   ac: 13, #unarmored
-  weapons: [:light_crossbow, :dagger],
+  weapons: ['light crossbow', 'dagger'],
   spells: [:burning_hands]
 )
 
@@ -43,26 +43,65 @@ cleric = Cleric.new(
   con: +3,
   wis: +3,
   ac: 18, #chain mail, shield
-  weapons: [:mace],
+  weapons: ['mace'],
   spells: [:healing_word],
   domain: :life
 )
 
-og_party = [fighter, rogue, wizard, cleric]
+Party = [fighter, rogue, wizard, cleric]
+orcs = Array.new(4).map { Monster.new 'Orc' }
 
-orcs = ['Blackhand', 'Orgrim', 'Grommash', 'Aggralan']
-orcs.map! { |name| Monster.new('orc') }
+Trial.new(Party + orcs, 2000).run
 
-characters = og_party + orcs
-
-Trial.new(characters, 1000).run
-# trials = []
-#
-# parties = og_party.repeated_combination(4).each do |party|
-#   new_party = party.map(&:renew)
-#   new_orcs = orcs.map { |name| Orc.new(name: name) }
-#   new_characters = new_party + new_orcs
-#   trials << Trial.new(new_characters, 2857).run
+# def get_90 monster
+#   n = 1
+#   no_death_chance = 1.0
+#   trials = []
+#   until no_death_chance < 0.9
+#     monsters = Array.new(n).map { Monster.new monster }
+#     trials << Trial.new(Party + monsters, 1000).run
+#     no_death_chance = trials.last.no_death_chance
+#     n += 1
+#   end
+#   trials
 # end
 #
-# trials.each &:calculate_averages
+# kobolds = get_90 'Kobold'
+# goblins = get_90 'Goblin'
+# orcs = get_90 'Orc'
+# bugbears = get_90 'Bugbear'
+#
+# kobolds[-2].print_results
+# goblins[-2].print_results
+# orcs[-2].print_results
+# bugbears[-2].print_results
+
+# kobolds = []
+# 4.times { kobolds << Monster.new('Kobold') }
+#
+# goblins = []
+# 4.times { goblins << Monster.new('Goblin') }
+#
+# orcs = []
+# 4.times { orcs << Monster.new('Orc') }
+#
+# bugbears = []
+# 4.times { bugbears << Monster.new('Bugbear') }
+#
+# kobold_trial = Trial.new(party + kobolds, 1000).run
+# goblin_trial = Trial.new(party + goblins, 1000).run
+# orc_trial = Trial.new(party + orcs, 1000).run
+# bugbear_trial = Trial.new(party + bugbears, 1000).run
+#
+# puts
+# p 'Kobolds'
+# kobold_trial.print_results
+# puts
+# p 'Goblins'
+# goblin_trial.print_results
+# puts
+# p 'Orcs'
+# orc_trial.print_results
+# puts
+# p 'Bugbear'
+# bugbear_trial.print_results

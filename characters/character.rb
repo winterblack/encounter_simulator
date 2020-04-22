@@ -7,6 +7,10 @@ class Character
   attr_accessor :actions, :bonus_actions, :allies, :foes, :engaged
   attr_accessor :initiative, :current_hp, :dead, :melee
 
+  # monster features
+  attr_accessor :pack_tactics, :nimble_escape
+
+
   def initialize options={}
     @options = options
     @name = options[:name]
@@ -106,14 +110,29 @@ class Character
     p "#{name} dies!"
   end
 
+  def set_proficiency_bonus
+    case level || challenge
+    when 5..8
+      @proficiency_bonus = 3
+    when 9..12
+      @proficiency_bonus = 4
+    when 13..16
+      @proficiency_bonus = 5
+    when 17..20
+      @proficiency_bonus = 6
+    else
+      @proficiency_bonus = 2
+    end
+  end
+
   def equip_weapons
-    weapons.each do |symbol|
-      weapon = Weapon.forge(symbol)
-      self.actions << weapon
-      ability_bonus = send weapon.ability
-      weapon.attack_bonus = ability_bonus + proficiency_bonus
-      weapon.damage_bonus = ability_bonus
-      weapon.character = self
+    weapons.each do |weapon|
+      action = Weapon.new(weapon)
+      self.actions << action
+      ability_bonus = send action.ability
+      action.attack_bonus = ability_bonus + proficiency_bonus
+      action.damage_bonus = ability_bonus
+      action.character = self
     end
   end
 end

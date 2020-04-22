@@ -11,7 +11,15 @@ module AttackBonus
 
   private
 
-  def check_for_disadvantage
-    return :disadvantage if ranged && character.engaged.any?
+  def advantage?
+    advantage = false
+    disadvantage = false
+
+    disadvantage = true if ranged && character.engaged.any?
+    advantage = true if character.pack_tactics && character.allies.count > 1
+
+    return nil if advantage && disadvantage
+    return :advantage if advantage
+    return :disadvantage if disadvantage
   end
 end

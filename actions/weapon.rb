@@ -1,38 +1,25 @@
+require 'yaml'
 require_relative 'action'
 require_relative 'attack_bonus'
 require_relative 'damage_bonus'
 require_relative '../dice'
 
+Weapons = YAML.load(File.read 'weapons.yaml')
+
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :damage_dice, :name, :ranged, :great
+  attr_reader :ability, :attack_bonus, :name, :ranged, :great
+  attr_accessor :damage_dice
   attr_accessor :sneak_attack, :gwf
 
-  def initialize name, ability, damage, options={}
-    @name = name.to_s.sub('_', ' ')
-    @ability = ability
-    @damage_dice = Dice damage
-    @ranged = options[:ranged]
-    @great = options[:great]
-    @finesse = options[:finesse]
-  end
-
-  def self.forge weapon
-    case weapon
-    when :greatsword
-      self.new weapon, :str, '2d6', great: true
-    when :light_crossbow
-      self.new weapon, :dex, '1d8', ranged: true
-    when :mace
-      self.new weapon, :str, '1d6'
-    when :greataxe
-      self.new weapon, :str, '1d12', great: true
-    when :shortsword
-      self.new weapon, :dex, '1d6'
-    when :dagger
-      self.new weapon, :dex, '1d4'
-    end
+  def initialize weapon
+    entry = Weapons[weapon]
+    @name = weapon
+    @ability = entry['ability']&.to_sym
+    @damage_dice = Dice(entry['damage'])
+    @ranged = entry['ranged'] || false
+    @great = entry['great']   || false
   end
 
   def weapon
@@ -47,7 +34,7 @@ class Weapon < Action
   def perform
     target = choose_target
     character.engage target unless ranged
-    hit, crit = roll_to_hit target, check_for_disadvantage
+    hit, crit = roll_to_hit target, advantage?
     if hit
       damage = damage_dice.roll(crit, gwf: gwf) + damage_bonus
       sneaking = sneaking? target
@@ -63,7 +50,7 @@ class Weapon < Action
 
   def evaluate_target target
     hit_chance = (21 + attack_bonus - target.ac) / 20.0
-    hit_chance = hit_chance**2 if check_for_disadvantage == :disadvantage
+    hit_chance = hit_chance**2 if advantage? == :disadvantage
     damage = damage_dice.average + damage_bonus
     damage = damage * 0.7 if !ranged && !character.melee && !character.engaged
     damage * hit_chance / target.hp
@@ -75,7 +62,7 @@ class Weapon < Action
 
   def choose_target
     targets = character.foes.select &:standing
-    targets = targets.select(&:melee) if targets.any?(&:melee) && !ranged
+    targets = targets.select(&:melee) if targets.any?(&:melee) && !ranged && !character.nimble_escape
     targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end
 end

@@ -88,19 +88,4 @@ module PlayerCharacter
     @hp = hd_type + (hd_type / 2 + 1) * (level - 1) + con * level
     @current_hp = hp
   end
-
-  def set_proficiency_bonus
-    case level
-    when 1..4
-      @proficiency_bonus = 2
-    when 5..8
-      @proficiency_bonus = 3
-    when 9..12
-      @proficiency_bonus = 4
-    when 13..16
-      @proficiency_bonus = 5
-    when 17..20
-      @proficiency_bonus = 6
-    end
-  end
 end

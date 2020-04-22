@@ -4,15 +4,18 @@ class Encounter
   attr_accessor :round
   attr_reader :characters
 
-  def initialize characters
+  def initialize characters, options={}
     @characters = characters
     @round = 0
-    characters.each &:roll_initiative
+    @daylight = options[:daylight]
     assign_allies_and_foes
   end
 
   def run
+    characters.each &:roll_initiative
     print "\nNew Encounter\n"
+
+    binding.pry if round == 0 && over
 
     until over
       play_round
@@ -23,6 +26,7 @@ class Encounter
     else
       print "\nThe party was victorious. #{party.count(&:dead)} characters died.\n"
     end
+
     return Outcome.new self
   end
 
