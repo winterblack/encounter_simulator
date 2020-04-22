@@ -62,7 +62,7 @@ class Character
   end
 
   def standing
-    !dead
+    current_hp > 0
   end
 
   def inspect

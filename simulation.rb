@@ -49,14 +49,28 @@ cleric = Cleric.new(
   domain: :life
 )
 
-party = [fighter, rogue, wizard, cleric]
+Party = [fighter, rogue, wizard, cleric]
 
-encounters = []
-encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
-encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
-encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
-encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
-
+encounters = Array.new(4) { Encounter.new(Array.new(2) { Monster.new('Orc')})}
 day = AdventuringDay.new(encounters)
 
-Trial.new(day, 100000/encounters.count).run(party)
+Trial.new(day, 10000).run(Party)
+# trials = []
+#
+# parties = Party.repeated_combination(4).each do |party|
+#   trials << Trial.new(day, 100000/35/4).run(party)
+# end
+#
+# no_death_trial = trials.max { |a, b| a.death_chance(0) <=> b.death_chance(0) }
+# no_tpk_trial = trials.min { |a, b| a.tpk_chance <=> b.tpk_chance }
+# someone_dies_trial = trials.min { |a, b| a.death_chance(0) <=> b.death_chance(0) }
+# everyone_dies_trial = trials.max { |a, b| a.tpk_chance <=> b.tpk_chance }
+#
+# print "No Death Trial"
+# no_death_trial.outcome
+# print "No TPK Trial"
+# no_tpk_trial.outcome
+# print "Someone Dies Trial"
+# someone_dies_trial.outcome
+# print "Everyone Dies Trial"
+# everyone_dies_trial.outcome

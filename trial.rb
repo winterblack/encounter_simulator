@@ -38,6 +38,7 @@ class Trial
   def outcome
     print "\n Ran the scenerio #{count} times."
     print "\n Party: #{party.map &:class}"
+    print "\n Monsters: #{outcomes.last.monsters}"
     print "\n Average rounds: #{average_rounds}"
     print "\n Average remaining hp: #{percent average_hp_remaining}"
     print "\n Chance of zero deaths: #{percent(death_chance(0))}"

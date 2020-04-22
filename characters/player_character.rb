@@ -19,7 +19,6 @@ module PlayerCharacter
   end
 
   def short_rest
-    return unless current_hp > 0
     roll_hit_die until hit_dice.empty? || current_hp == hp
   end
 
@@ -35,12 +34,8 @@ module PlayerCharacter
     self.death_saves = []
   end
 
-  def standing
-    !dead && !dying && !stable
-  end
-
   def inspect
-    "#<#{name} hp=#{current_hp}#{" spell_slots=#{spell_slots_remaining[1..-1]}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "#<#{name} hp=#{current_hp} hit_dice=#{hit_dice.map(&:type)}#{" spell_slots=#{spell_slots_remaining[1..-1]}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
   private

@@ -21,18 +21,23 @@ class AdventuringDay
     AdventuringDay.new encounters.map(&:renew)
   end
 
+  def monsters
+    encounters.map { |encounter| encounter.monsters.map &:monster }
+  end
+
   private
 
   def short_rest
     print "\nThe party takes a short rest.\n"
-    party.each &:before_short_rest
-    party.each &:short_rest
+
+    party.select(&:standing).each &:before_short_rest
+    party.select(&:standing).each &:short_rest
   end
 
   def outcome
     print "\nEnd of Adventuring Day\n"
     party.each { |character| p character }
-    Outcome.new party, rounds
+    Outcome.new party, rounds, monsters
   end
 
   def rounds

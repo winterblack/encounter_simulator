@@ -1,9 +1,10 @@
 class Outcome
-  attr_reader :party, :rounds
+  attr_reader :party, :rounds, :monsters
 
-  def initialize party, rounds
+  def initialize party, rounds, monsters
     @party = party
     @rounds = rounds
+    @monsters = monsters
   end
 
   def deaths

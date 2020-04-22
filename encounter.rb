@@ -68,6 +68,7 @@ class Encounter
     else
       print "\nThe party was victorious. #{party.count &:dead} characters died.\n"
     end
-    Outcome.new party, round
+    monster_types = monsters.map(&:monster)
+    Outcome.new party, round, monster_types
   end
 end
