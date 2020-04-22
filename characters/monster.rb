@@ -48,6 +48,10 @@ class Monster < Character
       actions.select(&:weapon).reject(&:ranged).each do |weapon|
         weapon.damage_dice.count += 1
       end
+    when 'large'
+      actions.select(&:weapon).each do |weapon|
+        weapon.damage_dice.count += 1
+      end
     end
   end
 end

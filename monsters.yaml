@@ -58,3 +58,18 @@ Bugbear:
     - surprise attack
   weapons: [morningstar]
   melee: true
+
+Ogre:
+  ac: 11
+  hp: 59
+  str: +4
+  dex: -1
+  con: +3
+  int: -3
+  wis: -2
+  cha: -2
+  challenge: 2
+  features:
+    - large
+  weapons: [greatclub]
+  melee: true

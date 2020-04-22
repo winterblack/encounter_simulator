@@ -68,8 +68,11 @@ kobolds = get_90 'Kobold'
 goblins = get_90 'Goblin'
 orcs = get_90 'Orc'
 bugbears = get_90 'Bugbear'
+ogres = get_90 'Ogre'
 
 kobolds[-2].print_results
 goblins[-2].print_results
 orcs[-2].print_results
 bugbears[-2].print_results
+ogres[-2]&.print_results
+ogres.last.print_results
