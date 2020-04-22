@@ -35,10 +35,8 @@ class Trial
     outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
   end
 
-  private
-
   def outcome
-    print "\n Ran the encounter #{count} times."
+    print "\n Ran the scenerio #{count} times."
     print "\n Party: #{party.map &:class}"
     print "\n Average rounds: #{average_rounds}"
     print "\n Average remaining hp: #{percent average_hp_remaining}"
@@ -46,6 +44,8 @@ class Trial
     print "\n Chance of TPK: #{percent tpk_chance}\n"
     self
   end
+
+  private
 
   def percent float
     (float * 100).round(2).to_s + '%'

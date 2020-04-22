@@ -25,14 +25,16 @@ class Encounter
   private
 
   def play_round
-    @round += 1
-
-    print "\nRound #{round}\n"
-
+    increment_round
     characters.sort_by(&:initiative).reverse.each do |character|
       character.take_turn unless character.dead
       break if over
     end
+  end
+
+  def increment_round
+    @round += 1
+    print "\nRound #{round}\n"
   end
 
   def get_ready

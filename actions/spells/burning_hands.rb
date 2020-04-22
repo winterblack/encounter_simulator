@@ -10,9 +10,10 @@ class BurningHands < Spell
     targets = choose_targets
     count = targets.count
     average_dex = targets.sum { |target| target.dex } / count
-    fail_chance = (save_dc - average_dex -1)/20.0
+    fail_chance = (save_dc - average_dex - 1)/20.0
     average_damage = damage.average
-    average_damage * fail_chance + (average_damage * (fail_chance - 1) / 2)
+    value = average_damage * fail_chance + (average_damage * (fail_chance - 1) / 2)
+    value < 1 ? 0 : value
   end
 
   def perform

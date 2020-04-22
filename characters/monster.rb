@@ -45,11 +45,11 @@ class Monster < Character
     when 'nimble escape'
       self.nimble_escape = true
     when 'brute'
-      actions.select(&:weapon).reject(&:ranged).each do |weapon|
+      actions.select(&:weapon?).reject(&:ranged).each do |weapon|
         weapon.damage_dice.count += 1
       end
     when 'large'
-      actions.select(&:weapon).each do |weapon|
+      actions.select(&:weapon?).each do |weapon|
         weapon.damage_dice.count += 1
       end
     end

@@ -1,15 +1,19 @@
 class Action
   attr_accessor :character
 
-  def weapon
+  def weapon?
     false
   end
 
-  def save
+  def save?
     false
   end
 
-  def spell_attack
+  def spell?
+    false
+  end
+
+  def spell_attack?
     false
   end
 end

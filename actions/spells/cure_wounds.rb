@@ -1,7 +1,7 @@
 require_relative 'spell'
 require_relative '../../dice'
 
-class HealingWord < Spell
+class CureWounds < Spell
   Level = 1
 
   def out_of_combat?
@@ -15,6 +15,7 @@ class HealingWord < Spell
     return 0 if healing == 0
     healing_value = healing / target.hp.to_f
     value = target.standing ? healing_value : (healing_value + 1)
+    value -= healing_word_penalty if character.foes.any?(&:standing)
     value < 1 ? 0 : value
   end
 
@@ -26,12 +27,16 @@ class HealingWord < Spell
 
   private
 
+  def healing_word_penalty
+    character.actions.select(&:weapon?).map(&:evaluate).max
+  end
+
   def roll_healing
     healing_dice.roll + character.spell_ability_score + life_domain_bonus
   end
 
   def healing_dice
-    Dice '1d4'
+    Dice '1d8'
   end
 
   def average_healing
@@ -39,7 +44,7 @@ class HealingWord < Spell
   end
 
   def life_domain_bonus
-    character.domain == :life ? 3 : 0
+    character.domain == :life ? 2 + Level : 0
   end
 
   def choose_target

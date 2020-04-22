@@ -15,6 +15,9 @@ module PlayerCharacter
     super
   end
 
+  def before_short_rest
+  end
+
   def short_rest
     return unless current_hp > 0
     roll_hit_die until hit_dice.empty? || current_hp == hp

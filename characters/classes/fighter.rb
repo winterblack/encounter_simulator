@@ -35,7 +35,7 @@ class Fighter < Character
   end
 
   def set_great_weapon_fighting
-    actions.select(&:weapon).select(&:great).each do |weapon|
+    actions.select(&:weapon?).select(&:great).each do |weapon|
       weapon.gwf = true
     end
   end

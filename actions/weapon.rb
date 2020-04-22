@@ -22,7 +22,7 @@ class Weapon < Action
     @great = entry['great']   || false
   end
 
-  def weapon
+  def weapon?
     true
   end
 
@@ -49,6 +49,7 @@ class Weapon < Action
   private
 
   def evaluate_target target
+    binding.pry if target.nil?
     hit_chance = (21 + attack_bonus - target.ac) / 20.0
     hit_chance = hit_chance**2 if advantage? == :disadvantage
     hit_chance = 1 - (1 - hit_chance**2) if advantage? == :advantage

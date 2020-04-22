@@ -25,6 +25,7 @@ class AdventuringDay
 
   def short_rest
     print "\nThe party takes a short rest.\n"
+    party.each &:before_short_rest
     party.each &:short_rest
   end
 

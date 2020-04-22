@@ -16,7 +16,7 @@ class Rogue < Character
 
   def set_sneak_attack
     sneak_attack = Dice "#{(level+1)/2}d6"
-    sneaking_attacks = actions.select(&:weapon).select do |weapon|
+    sneaking_attacks = actions.select(&:weapon?).select do |weapon|
       weapon.ability == :dex
     end
     sneaking_attacks.each do |attack|

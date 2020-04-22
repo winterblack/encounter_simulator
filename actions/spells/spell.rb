@@ -3,14 +3,22 @@ require_relative '../attack_bonus'
 require_relative '../save_dc'
 
 class Spell < Action
+  def spell?
+    true
+  end
+
+  def out_of_combat?
+    false
+  end
+
   def evaluate
-    return false if insufficeint_spell_slots
+    return false if cannot
     true
   end
 
   def perform
-    return false if insufficeint_spell_slots
-    character.spell_slots_remaining[spell_level] -= 1 unless spell_level == :cantrip
+    return false if cannot
+    character.spell_slots_remaining[spell_level] -= 1
     p "#{character.name} casts #{self.class}!"
     p "#{character.name} has #{character.spell_slots_remaining[1..-1]} spell slots remaining."
     true
@@ -22,8 +30,12 @@ class Spell < Action
     self.class::Level
   end
 
+  def cannot
+    insufficeint_spell_slots || character.spell_cast_this_turn
+  end
+
   def insufficeint_spell_slots
-    character.spell_slots_remaining[spell_level] == 0 unless spell_level == :cantrip
+    character.spell_slots_remaining[spell_level] == 0
   end
 
   def cantrip_dice
