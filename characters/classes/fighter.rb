@@ -41,6 +41,6 @@ class Fighter < Character
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{" death_saves=#{death_saves}" if !standing}#{' second_wind_used' if second_wind_used}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "#<#{name} hp=#{current_hp}#{" death_saves=#{death_saves}" if !standing}#{' second_wind_used' if second_wind_used}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 end

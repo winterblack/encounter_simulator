@@ -1,6 +1,8 @@
+require_relative 'outcome'
+
 class Encounter
-  attr_reader :monsters, :party
-  attr_accessor :round
+  attr_accessor :monsters
+  attr_reader :party, :round
 
   def initialize monsters
     @monsters = monsters
@@ -8,20 +10,19 @@ class Encounter
   end
 
   def run party
-    print "\nNew Encounter\n"
-
     @party = party
-    assign_allies_and_foes
-    characters.each &:roll_initiative
+    get_ready
+
     play_round until over
 
-    if party.none? &:standing
-      print "\nTPK\n"
-    else
-      print "\nThe party was victorious. #{party.count &:dead} characters died.\n"
-    end
-
+    outcome
   end
+
+  def renew
+    Encounter.new monsters.map(&:renew)
+  end
+
+  private
 
   def play_round
     @round += 1
@@ -34,7 +35,11 @@ class Encounter
     end
   end
 
-  private
+  def get_ready
+    print "\nNew Encounter\n"
+    assign_allies_and_foes
+    characters.each &:roll_initiative
+  end
 
   def characters
     @characters ||= monsters + party
@@ -53,5 +58,14 @@ class Encounter
 
   def over
     party.none?(&:standing) || monsters.none?(&:standing)
+  end
+
+  def outcome
+    if party.none? &:standing
+      print "\nTPK\n"
+    else
+      print "\nThe party was victorious. #{party.count &:dead} characters died.\n"
+    end
+    Outcome.new party, round
   end
 end

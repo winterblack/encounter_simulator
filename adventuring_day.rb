@@ -1,23 +1,40 @@
 class AdventuringDay
-  attr_reader :encounters, :party
+  attr_accessor :encounters, :outcomes
+  attr_reader :party
 
-  def initialize encounters, party
+  def initialize encounters
     @encounters = encounters
-    @party = party
+    @outcomes = []
   end
 
-  def adventure
+  def run party
+    @party = party
     encounters.each do |encounter|
-      encounter.run party
+      outcomes << encounter.run(party)
       break if party.none? &:standing
-
-      print "\nThe party takes a short rest.\n"
-      party.each &:short_rest
+      short_rest
     end
+    outcome
+  end
 
+  def renew
+    AdventuringDay.new encounters.map(&:renew)
+  end
+
+  private
+
+  def short_rest
+    print "\nThe party takes a short rest.\n"
+    party.each &:short_rest
+  end
+
+  def outcome
     print "\nEnd of Adventuring Day\n"
-    party.each do |character|
-      p character
-    end
+    party.each { |character| p character }
+    Outcome.new party, rounds
+  end
+
+  def rounds
+    outcomes.map(&:rounds).reduce(:+) / outcomes.count
   end
 end

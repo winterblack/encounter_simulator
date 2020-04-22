@@ -56,9 +56,9 @@ class Character
   end
 
   def heal healing
-    self.current_hp += healing
-    self.current_hp = hp if current_hp > hp
-    p "#{name} was healed for #{healing}. #{name} is at #{current_hp} hp."
+    max_healing = [hp - current_hp, healing].min
+    self.current_hp += max_healing
+    p "#{name} was healed for #{max_healing}. #{name} is at #{current_hp} hp."
   end
 
   def standing
@@ -66,7 +66,7 @@ class Character
   end
 
   def inspect
-    "<#{name} hp=#{current_hp}#{' dead' if dead}>"
+    "#<#{name} hp=#{current_hp}#{' dead' if dead}>"
   end
 
   def renew

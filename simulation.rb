@@ -3,6 +3,7 @@ require_all 'characters/classes'
 require_relative 'characters/monster'
 require_relative 'encounter'
 require_relative 'adventuring_day'
+require_relative 'trial'
 
 fighter = Fighter.new(
   name: 'Tordek',
@@ -51,8 +52,9 @@ cleric = Cleric.new(
 party = [fighter, rogue, wizard, cleric]
 
 encounters = []
-encounters << Encounter.new(Array.new(4) { Monster.new 'Kobold' })
-encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
-encounters << Encounter.new(Array.new(2) { Monster.new 'Orc' })
+encounters << Encounter.new(Array.new(6) { Monster.new 'Kobold' })
+encounters << Encounter.new(Array.new(6) { Monster.new 'Kobold' })
 
-AdventuringDay.new(encounters, party).adventure
+day = AdventuringDay.new(encounters)
+
+Trial.new(day, 10000).run(party)
