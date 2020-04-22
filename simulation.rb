@@ -51,57 +51,25 @@ cleric = Cleric.new(
 Party = [fighter, rogue, wizard, cleric]
 orcs = Array.new(4).map { Monster.new 'Orc' }
 
-Trial.new(Party + orcs, 2000).run
+def get_90 monster
+  n = 1
+  no_death_chance = 1.0
+  trials = []
+  until no_death_chance < 0.9
+    monsters = Array.new(n).map { Monster.new monster }
+    trials << Trial.new(Party + monsters, 1000).run
+    no_death_chance = trials.last.no_death_chance
+    n += 1
+  end
+  trials
+end
 
-# def get_90 monster
-#   n = 1
-#   no_death_chance = 1.0
-#   trials = []
-#   until no_death_chance < 0.9
-#     monsters = Array.new(n).map { Monster.new monster }
-#     trials << Trial.new(Party + monsters, 1000).run
-#     no_death_chance = trials.last.no_death_chance
-#     n += 1
-#   end
-#   trials
-# end
-#
-# kobolds = get_90 'Kobold'
-# goblins = get_90 'Goblin'
-# orcs = get_90 'Orc'
-# bugbears = get_90 'Bugbear'
-#
-# kobolds[-2].print_results
-# goblins[-2].print_results
-# orcs[-2].print_results
-# bugbears[-2].print_results
+kobolds = get_90 'Kobold'
+goblins = get_90 'Goblin'
+orcs = get_90 'Orc'
+bugbears = get_90 'Bugbear'
 
-# kobolds = []
-# 4.times { kobolds << Monster.new('Kobold') }
-#
-# goblins = []
-# 4.times { goblins << Monster.new('Goblin') }
-#
-# orcs = []
-# 4.times { orcs << Monster.new('Orc') }
-#
-# bugbears = []
-# 4.times { bugbears << Monster.new('Bugbear') }
-#
-# kobold_trial = Trial.new(party + kobolds, 1000).run
-# goblin_trial = Trial.new(party + goblins, 1000).run
-# orc_trial = Trial.new(party + orcs, 1000).run
-# bugbear_trial = Trial.new(party + bugbears, 1000).run
-#
-# puts
-# p 'Kobolds'
-# kobold_trial.print_results
-# puts
-# p 'Goblins'
-# goblin_trial.print_results
-# puts
-# p 'Orcs'
-# orc_trial.print_results
-# puts
-# p 'Bugbear'
-# bugbear_trial.print_results
+kobolds[-2].print_results
+goblins[-2].print_results
+orcs[-2].print_results
+bugbears[-2].print_results
