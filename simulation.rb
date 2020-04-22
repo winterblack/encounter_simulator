@@ -51,9 +51,8 @@ cleric = Cleric.new(
 party = [fighter, rogue, wizard, cleric]
 
 encounters = []
-encounters << Encounter.new(Array.new(2) { Monster.new 'Kobold' })
-encounters << Encounter.new(Array.new(2) { Monster.new 'Goblin' })
+encounters << Encounter.new(Array.new(4) { Monster.new 'Kobold' })
+encounters << Encounter.new(Array.new(3) { Monster.new 'Goblin' })
 encounters << Encounter.new(Array.new(2) { Monster.new 'Orc' })
-encounters << Encounter.new(Array.new(2) { Monster.new 'Kobold' })
 
 AdventuringDay.new(encounters, party).adventure
