@@ -3,9 +3,10 @@ require_relative '../actions/weapon'
 class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
   attr_reader :name, :level, :ac, :hp, :proficiency_bonus
-  attr_reader :save_proficiencies, :weapons
+  attr_reader :save_proficiencies, :weapons, :spells
   attr_accessor :actions, :bonus_actions, :allies, :foes, :engaged
   attr_accessor :initiative, :current_hp, :dead, :melee
+  attr_accessor :helped_by
 
   # monster features
   attr_accessor :pack_tactics, :nimble_escape
@@ -25,6 +26,7 @@ class Character
     @bonus_actions = []
     @engaged = []
     @save_proficiencies = []
+    @spells = []
   end
 
   def roll_initiative
@@ -86,6 +88,10 @@ class Character
   def disengage
     self.engaged.each { |character| character.engaged.delete self }
     self.engaged = []
+  end
+
+  def familiar?
+    false
   end
 
   private

@@ -1,6 +1,6 @@
 module PlayerCharacter
   attr_accessor :dying, :death_saves, :stable, :hit_dice, :ranged
-  attr_reader :spell_slots
+  attr_reader :spell_slots, :sneak_attack
   def initialize options
     super options
     @level = options[:level]

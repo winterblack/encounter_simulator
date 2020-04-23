@@ -39,6 +39,7 @@ class Weapon < Action
     target = choose_target
     character.engage target unless ranged
     hit, crit = roll_to_hit target, advantage?
+    engage_helper target if character.helped_by
     if hit
       damage = damage_dice.roll(crit, gwf: gwf) + damage_bonus
       damage += sneak_attack_damage target, crit
@@ -50,6 +51,11 @@ class Weapon < Action
   end
 
   private
+
+  def engage_helper target
+    character.helped_by.engage target
+    character.helped_by = nil
+  end
 
   def sneak_attack_damage target, crit
     sneaking = sneaking? target
@@ -72,16 +78,22 @@ class Weapon < Action
   end
 
   def evaluate_target target
+    return evaluate_familiar target if target.familiar?
     hit_chance = (21 + attack_bonus - target.ac) / 20.0
     hit_chance = hit_chance**2 if advantage? == :disadvantage
-    hit_chance = 1 - (1 - hit_chance**2) if advantage? == :advantage
+    hit_chance = 1 - (1 - hit_chance)**2 if advantage? == :advantage
     damage = damage_dice.average + damage_bonus
     damage = damage * 0.7 if !ranged && !character.melee && !character.engaged
     damage * hit_chance / target.current_hp
   end
 
+  def evaluate_familiar target
+    target.actions.first.evaluate
+  end
+
   def sneaking? target
-    sneak_attack && target.engaged.count > 0 && !character.sneak_attack_used
+    return false if !sneak_attack || character.sneak_attack_used
+    return true if target.engaged.count > 0 || advantage?
   end
 
   def choose_target

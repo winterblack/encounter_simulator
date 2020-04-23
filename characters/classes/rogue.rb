@@ -4,7 +4,6 @@ require_relative '../player_character'
 class Rogue < Character
   include PlayerCharacter
   HD_Type = 8
-  attr_reader :sneak_attack
   attr_accessor :sneak_attack_used
 
   def initialize options

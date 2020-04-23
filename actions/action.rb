@@ -16,4 +16,8 @@ class Action
   def spell_attack?
     false
   end
+
+  def attack?
+    false
+  end
 end

@@ -2,7 +2,7 @@ class Outcome
   attr_reader :party, :rounds, :monsters
 
   def initialize party, rounds, monsters
-    @party = party
+    @party = party.reject(&:familiar?)
     @rounds = rounds
     @monsters = monsters
   end
