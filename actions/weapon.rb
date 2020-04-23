@@ -35,7 +35,7 @@ class Weapon < Action
   end
 
   def perform
-    draw_offhand_weapon if light && character.melee
+    draw_offhand_weapon if light && character.melee && character.pc?
     target = choose_target
     character.engage target unless ranged
     hit, crit = roll_to_hit target, advantage?

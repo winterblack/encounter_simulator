@@ -75,7 +75,7 @@ class Encounter
     if party.none? &:standing
       print "\nTPK\n"
     else
-      print "\nThe party was victorious. #{party.count &:dead} characters died.\n"
+      print "\nThe party was victorious. #{party.reject(&:familiar?).count &:dead} characters died.\n"
     end
     monster_types = monsters.map(&:monster)
     Outcome.new party, round, monster_types
