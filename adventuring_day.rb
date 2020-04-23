@@ -32,6 +32,7 @@ class AdventuringDay
 
     party.select(&:standing).each &:before_short_rest
     party.select(&:standing).each &:short_rest
+    party.select(&:melee).select(&:ranged).each &:sheath_weapons
   end
 
   def outcome

@@ -18,6 +18,7 @@ class Spell < Action
 
   def perform
     return false if cannot
+    character.spell_cast_this_turn = true
     character.spell_slots_remaining[spell_level] -= 1
     p "#{character.name} casts #{self.class}!"
     p "#{character.name} has #{character.spell_slots_remaining[1..-1]} spell slots remaining."

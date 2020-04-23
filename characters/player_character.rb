@@ -1,13 +1,19 @@
 module PlayerCharacter
-  attr_accessor :dying, :death_saves, :stable, :hit_dice
+  attr_accessor :dying, :death_saves, :stable, :hit_dice, :ranged
   attr_reader :spell_slots
   def initialize options
     super options
+    @level = options[:level]
     @pc = true
     @death_saves = []
+    @ranged = !melee
     set_proficiency_bonus
     set_starting_hp
     equip_weapons
+  end
+
+  def pc?
+    true
   end
 
   def take_turn
@@ -36,6 +42,11 @@ module PlayerCharacter
 
   def inspect
     "#<#{name} hp=#{current_hp} hit_dice=#{hit_dice.map(&:type)}#{" spell_slots=#{spell_slots_remaining[1..-1]}" if spell_slots}#{" death_saves=#{death_saves}" if !standing}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+  end
+
+  def sheath_weapons
+    bonus_actions.reject!(&:weapon?)
+    self.melee = false
   end
 
   private

@@ -9,9 +9,11 @@ Weapons = YAML.load(File.read 'weapons.yaml')
 class Weapon < Action
   include AttackBonus
   include DamageBonus
-  attr_reader :ability, :attack_bonus, :name, :ranged, :great
+  attr_reader :ability, :attack_bonus, :name
+  attr_reader :ranged, :great, :light
   attr_accessor :damage_dice
   attr_accessor :sneak_attack, :gwf
+  attr_accessor :drawn
 
   def initialize weapon
     entry = Weapons[weapon]
@@ -19,7 +21,8 @@ class Weapon < Action
     @ability = entry['ability']&.to_sym
     @damage_dice = Dice(entry['damage'])
     @ranged = entry['ranged'] || false
-    @great = entry['great']   || false
+    @great = entry['great'] || false
+    @light = entry['light'] || false
   end
 
   def weapon?
@@ -32,14 +35,14 @@ class Weapon < Action
   end
 
   def perform
+    draw_offhand_weapon if light && character.melee
     target = choose_target
     character.engage target unless ranged
     hit, crit = roll_to_hit target, advantage?
     if hit
       damage = damage_dice.roll(crit, gwf: gwf) + damage_bonus
-      sneaking = sneaking? target
-      damage += sneak_attack.roll(crit) if sneaking
-      p "#{"#{character.name} sneak attacks! " if sneaking}#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with a #{name}."
+      damage += sneak_attack_damage target, crit
+      p "#{"#{character.name} crits! " if crit}#{character.name} deals #{damage} damage to #{target.name} with a #{name}."
       target.take damage
     else
       p "#{character.name} misses #{target.name}."
@@ -48,8 +51,27 @@ class Weapon < Action
 
   private
 
+  def sneak_attack_damage target, crit
+    sneaking = sneaking? target
+    return 0 if !sneaking
+    p "#{character.name} sneak attacks! " if sneaking
+    character.sneak_attack_used = true
+    sneak_attack.roll(crit)
+  end
+
+  def draw_offhand_weapon
+    offhand_weapon = Weapon.new name
+    character.bonus_actions << offhand_weapon
+    ability_bonus = character.send ability
+    offhand_weapon.attack_bonus = ability_bonus + character.proficiency_bonus
+    offhand_weapon.damage_bonus = 0
+    offhand_weapon.character = character
+    if offhand_weapon.ability == :dex && character.respond_to?(:sneak_attack)
+      offhand_weapon.sneak_attack = character.sneak_attack
+    end
+  end
+
   def evaluate_target target
-    binding.pry if target.nil?
     hit_chance = (21 + attack_bonus - target.ac) / 20.0
     hit_chance = hit_chance**2 if advantage? == :disadvantage
     hit_chance = 1 - (1 - hit_chance**2) if advantage? == :advantage
@@ -59,7 +81,7 @@ class Weapon < Action
   end
 
   def sneaking? target
-    sneak_attack && target.engaged.count > 0
+    sneak_attack && target.engaged.count > 0 && !character.sneak_attack_used
   end
 
   def choose_target

@@ -1,9 +1,11 @@
 club:
   ability: str
   damage: 1d4
+  light: true
 dagger:
   ability: dex
   damage: 1d4
+  light: true
 greatclub:
   ability: str
   damage: 1d8
@@ -11,12 +13,14 @@ greatclub:
 handaxe:
   ability: str
   damage: 1d6
+  light: true
 javelin:
   ability: str
   damage: 1d6
 light hammer:
   ability: str
   damage: 1d4
+  light: true
 mace:
   ability: str
   damage: 1d6
@@ -26,6 +30,7 @@ quarterstaff:
 sickle:
   ability: str
   damage: 1d4
+  light: true
 spear:
   ability: str
   damage: 1d6
@@ -87,9 +92,11 @@ rapier:
 scimitar:
   ability: dex
   damage: 1d6
+  light: true
 shortsword:
   ability: dex
   damage: 1d6
+  light: true
 trident:
   ability: str
   damage: 1d6

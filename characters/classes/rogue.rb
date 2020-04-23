@@ -4,6 +4,8 @@ require_relative '../player_character'
 class Rogue < Character
   include PlayerCharacter
   HD_Type = 8
+  attr_reader :sneak_attack
+  attr_accessor :sneak_attack_used
 
   def initialize options
     super(options)
@@ -14,8 +16,12 @@ class Rogue < Character
 
   private
 
+  def end_turn
+    self.sneak_attack_used = false
+  end
+
   def set_sneak_attack
-    sneak_attack = Dice "#{(level+1)/2}d6"
+    @sneak_attack = Dice "#{(level+1)/2}d6"
     sneaking_attacks = actions.select(&:weapon?).select do |weapon|
       weapon.ability == :dex
     end

@@ -10,11 +10,9 @@ class Character
   # monster features
   attr_accessor :pack_tactics, :nimble_escape
 
-
   def initialize options={}
     @options = options
     @name = options[:name]
-    @level = options[:level]
     @ac = options[:ac]
     @str = options[:str] || 0
     @dex = options[:dex] || 0
@@ -36,9 +34,10 @@ class Character
   def take_turn
     action = choose_action
     action.perform
-    return if foes.none?(&:standing)
+    return end_turn if foes.none?(&:standing)
     bonus_action = choose_bonus_action
     bonus_action.perform if bonus_action && bonus_action.evaluate > 0
+    end_turn
   end
 
   def roll_save ability
@@ -51,7 +50,7 @@ class Character
 
   def take damage
     self.current_hp -= damage
-    p "#{name} has #{current_hp} hp remaining" if current_hp > 0
+    p "#{name} has #{current_hp} hp remaining" if standing
     check_if_dead unless pc?
   end
 
@@ -74,7 +73,7 @@ class Character
   end
 
   def pc?
-    self.class.included_modules.include?(PlayerCharacter)
+    false
   end
 
   def engage target
@@ -90,6 +89,9 @@ class Character
   end
 
   private
+
+  def end_turn
+  end
 
   def choose_action
     actions.max { |a, b| a.evaluate <=> b.evaluate }
