@@ -9,7 +9,7 @@ class Help < Action
   private
 
   def valid_targets
-    character.allies.select(&:pc?).select(&:standing?)
+    character.allies.select(&:standing?)
   end
 
   def evaluate_target ally
