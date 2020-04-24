@@ -46,8 +46,8 @@ class Weapon < Action
 
   def strike
     damage = roll_damage
-    target.take damage
     p crit_message + hit_message(damage)
+    target.take damage
   end
 
   def roll_damage

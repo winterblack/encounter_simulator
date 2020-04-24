@@ -11,6 +11,7 @@ class BurningHands < Spell
     @targets = choose_targets
     return zero if targets.none?
     @value = evaluate_targets
+    worth_spell_slot
   end
 
   def perform

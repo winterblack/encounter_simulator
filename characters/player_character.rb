@@ -67,7 +67,7 @@ class PlayerCharacter < Character
   end
 
   def inspect
-    p "#<#{self.class} hp=#{current_hp} hit_dice=#{hit_dice.map &:type}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "#<#{self.class} hp=#{current_hp} hit_dice=#{hit_dice.map &:type}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
   private

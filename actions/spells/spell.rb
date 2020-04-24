@@ -8,7 +8,12 @@ class Spell < Action
     character.spell_slots[spell_level] -= 1
 
     p "#{character.name} casts #{self.class}."
-    p "#{character.name}' spell slots: #{character.spell_slots}"
+    p "#{character.name}' spell slots: #{character.spell_slots[1..-1]}"
+  end
+
+  def evaluate
+    super
+    worth_spell_slot
   end
 
   def spell?
@@ -16,6 +21,11 @@ class Spell < Action
   end
 
   private
+
+  def worth_spell_slot
+    @value = 0 if value < 0.5
+    @value
+  end
 
   def bonus_action_value
     return 0 if bonus_action
