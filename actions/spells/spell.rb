@@ -4,12 +4,10 @@ require_relative '../../dice'
 
 class Spell < Action
   def perform
-    binding.pry if cannot
     character.spell_cast_this_turn = true
     character.spell_slots[spell_level] -= 1
 
     p "#{character.name} casts #{self.class}."
-    p "#{character.name}' spell slots: #{character.spell_slots[1..-1]}"
   end
 
   def evaluate

@@ -34,7 +34,7 @@ wizard = Wizard.new(
   int: +3,
   ac: 13, #unarmored
   weapons: ['light crossbow', 'dagger'],
-  spells: [:burning_hands, :find_familiar]
+  spells: [:burning_hands]
 )
 
 cleric = Cleric.new(
@@ -77,18 +77,18 @@ Party = [cleric, fighter, rogue, wizard]
 # end
 
 encounters = []
-encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
-# encounters << Encounter.new(Array.new(5) { Monster.new('Kobold') })
-encounters << Encounter.new(Array.new(3) { Monster.new('Goblin') })
-# encounters << Encounter.new(Array.new(2) { Monster.new('Orc') })
-# encounters << Encounter.new(Array.new(2) { Monster.new('Bugbear') })
+encounters << Encounter.new(Array.new(5) { Monster.new('Kobold') })
+# encounters << Encounter.new(Array.new(4) { Monster.new('Goblin') })
+# encounters << Encounter.new(Array.new(3) { Monster.new('Orc') })
+encounters << Encounter.new(Array.new(2) { Monster.new('Bugbear') })
+# encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
 
 adventure = AdventuringDay.new(encounters)
 
-adventure.run(Party)
+# adventure.run(Party)
 
-# Trial.new(adventure, 10000).run Party
-#
+Trial.new(adventure, 10000).run Party
+
 # # trials = []
 # #
 # # Party.repeated_combination(4).each do |party|

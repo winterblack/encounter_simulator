@@ -69,11 +69,11 @@ class Encounter
   end
 
   def over
-    party.reject!(&:familiar?)
-    party.none?(&:standing?) || monsters.none?(&:standing?)
+    party.reject(&:familiar?).none?(&:standing?) || monsters.none?(&:standing?)
   end
 
   def outcome
+    party.reject!(&:familiar?)
     if party.none? &:standing?
       print "\n TPK \n"
     else

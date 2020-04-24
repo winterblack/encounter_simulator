@@ -34,7 +34,7 @@ class Monster < Character
   end
 
   def inspect
-    "#<#{self.class} hp=#{current_hp}#{' dead' if dead}>"
+    "#<#{self.monster} #{self.object_id} hp=#{current_hp}#{' dead' if dead}>"
   end
 
   private

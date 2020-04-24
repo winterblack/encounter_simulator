@@ -1,4 +1,5 @@
 require_relative '../actions/weapon'
+require_relative '../actions/help'
 
 class Character
   attr_reader :name, :level
@@ -14,7 +15,8 @@ class Character
   attr_reader :pack_tactics, :nimble_escape
 
   def initialize
-    @actions = []
+    @actions = [Help.new]
+    actions.each { |action| action.character = self }
     @bonus_actions = []
     @engaged = []
   end
@@ -25,7 +27,7 @@ class Character
 
   def take_turn
     print "\nIt's #{name}'s turn.\n"
-
+    $current_turn = self
     action = choose_action
     action.perform if action && action.evaluate > 0
     bonus_action = choose_bonus_action
@@ -53,6 +55,7 @@ class Character
 
   def engage target
     self.melee = true
+    p "#{name} engages #{target.name}."
     self.engaged << target unless self.engaged.include? target
     target.engaged << self unless target.engaged.include? self
   end
@@ -70,10 +73,18 @@ class Character
     false
   end
 
+  def familiar?
+    false
+  end
+
+  def inspect
+    "#<#{self.class} hp=#{current_hp}>"
+  end
+
   private
 
   def choose_action
-    action = actions.max { |a, b| a.evaluate <=> b.evaluate }
+    actions.max { |a, b| a.evaluate <=> b.evaluate }
   end
 
   def choose_bonus_action

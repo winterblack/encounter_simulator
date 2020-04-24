@@ -39,10 +39,6 @@ class PlayerCharacter < Character
     true
   end
 
-  def familiar?
-    false
-  end
-
   def spellcaster?
     false
   end
@@ -83,6 +79,7 @@ class PlayerCharacter < Character
 
   def check_if_dying
     return if current_hp > 1
+    disengage
     if hp + current_hp > 0
       self.dying = true
       self.current_hp = 0

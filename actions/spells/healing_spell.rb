@@ -26,6 +26,7 @@ module HealingSpell
   def evaluate_target target
     super
     healing = [average_healing, max_healing].min
+    healing = average_healing if character.foes.none?(&:standing?)
     value = healing / target.hp.to_f
     target.standing? ? value : value + action_value
   end

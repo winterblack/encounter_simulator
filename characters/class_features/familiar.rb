@@ -14,9 +14,6 @@ class Familiar < Character
     @int = -4
     @wis = +2
     @cha = -2
-    help = Help.new
-    help.character = self
-    @actions = [help]
   end
 
   def familiar?

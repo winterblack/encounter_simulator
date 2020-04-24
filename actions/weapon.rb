@@ -6,7 +6,7 @@ class Weapon < Action
   include Attack
   attr_reader :weapon
   attr_accessor :damage_dice, :damage_bonus
-  attr_reader :ranged, :finesse, :great, :light
+  attr_reader :finesse, :great, :light
 
   Weapons = YAML.load(File.read 'weapons.yaml')
 
@@ -34,16 +34,6 @@ class Weapon < Action
 
   private
 
-  def valid_targets
-    targets = super
-    targets.select!(&:melee) if must_target_melee(targets)
-    targets
-  end
-
-  def must_target_melee targets
-    targets.any?(&:melee) && !ranged && !character.nimble_escape
-  end
-
   def strike
     damage = roll_damage
     p crit_message + hit_message(damage)
@@ -63,9 +53,8 @@ class Weapon < Action
   end
 
   def effects
-    character.engage target unless ranged
+    super
     draw_offhand_weapon if light && character.melee && character.pc?
-    character.helper = nil
   end
 
   def draw_offhand_weapon

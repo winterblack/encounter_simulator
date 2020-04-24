@@ -8,7 +8,6 @@ class SecondWind < Action
   end
 
   def perform
-    binding.pry if cannot
     p "#{character.name} uses Second Wind!"
     healing = healing_dice.roll + fighter_level
     character.heal(healing)
