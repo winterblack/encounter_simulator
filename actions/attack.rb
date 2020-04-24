@@ -13,17 +13,6 @@ module Attack
     true
   end
 
-  private
-
-  def valid_targets
-    character.foes.select &:standing?
-  end
-
-  def evaluate_target target
-    super
-    average_damage * hit_chance / target.current_hp
-  end
-
   def hit_chance
     chance = (21 + attack_bonus - target.ac) / 20.0
     case advantage_disadvantage
@@ -41,6 +30,17 @@ module Attack
     return nil if advantage && disadvantage
     return :advantage if advantage
     return :disadvantage if disadvantage
+  end
+
+  private
+
+  def valid_targets
+    character.foes.select &:standing?
+  end
+
+  def evaluate_target target
+    super
+    average_damage * hit_chance / target.current_hp
   end
 
   def roll_to_hit

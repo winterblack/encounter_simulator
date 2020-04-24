@@ -2,7 +2,7 @@ require_relative '../character'
 require_relative '../../actions/help'
 
 class Familiar < Character
-  def initialize options={}
+  def initialize
     super
     @name = 'Familiar'
     @ac = 13

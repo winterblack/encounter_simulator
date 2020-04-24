@@ -1,12 +1,12 @@
 module SneakAttack
+  def average_damage
+    super + sneak_attack_average
+  end
+
   private
 
   def sneak_attack_dice
     @sneak_attack_dice ||= Dice.new "#{(character.level+1)/2}d6"
-  end
-
-  def average_damage
-    super + sneak_attack_average
   end
 
   def sneak_attack_average

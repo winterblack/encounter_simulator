@@ -1,4 +1,5 @@
 require_relative 'outcome'
+require_relative 'characters/class_features/familiar'
 
 class Encounter
   attr_accessor :monsters
@@ -38,6 +39,7 @@ class Encounter
   end
 
   def get_ready
+    summon_familiars
     assign_allies_and_foes
     characters.each &:roll_initiative
 
@@ -59,7 +61,15 @@ class Encounter
     end
   end
 
+  def summon_familiars
+    party.reject!(&:familiar?)
+    party.select(&:spellcaster?).select { |pc| pc.spells.include?(:find_familiar) }.each do
+      party << Familiar.new
+    end
+  end
+
   def over
+    party.reject!(&:familiar?)
     party.none?(&:standing?) || monsters.none?(&:standing?)
   end
 

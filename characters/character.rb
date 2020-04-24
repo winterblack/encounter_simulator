@@ -8,6 +8,7 @@ class Character
   attr_accessor :initiative, :current_hp, :melee, :dead
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
+  attr_accessor :helper
 
   # monster features
   attr_reader :pack_tactics, :nimble_escape
@@ -26,9 +27,9 @@ class Character
     print "\nIt's #{name}'s turn.\n"
 
     action = choose_action
-    action.perform if can_perform action
+    action.perform if action && action.evaluate > 0
     bonus_action = choose_bonus_action
-    bonus_action.perform if can_perform bonus_action
+    bonus_action.perform if bonus_action && bonus_action.evaluate > 0
   end
 
   def take damage
@@ -77,12 +78,6 @@ class Character
 
   def choose_bonus_action
     bonus_actions.max { |a, b| a.evaluate <=> b.evaluate }
-  end
-
-  def can_perform action
-    return false unless action
-    action.evaluate unless action.value
-    action.value > 0
   end
 
   def check_if_dying

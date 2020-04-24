@@ -35,7 +35,7 @@ end
 private
 
 def choose_target
-  valid_targets.max { |a, b| evaluate_target(a) <=> evalaute_target(b) }
+  valid_targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
 end
 
 def valid_targets

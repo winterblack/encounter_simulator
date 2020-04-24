@@ -39,6 +39,15 @@ class PlayerCharacter < Character
     true
   end
 
+  def familiar?
+    false
+  end
+
+  def spellcaster?
+    false
+  end
+
+
   def equip_offhand_weapon weapon
     character.bonus_actions << weapon
     ability_bonus = send weapon.ability

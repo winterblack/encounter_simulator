@@ -25,6 +25,10 @@ class Action
     false
   end
 
+  def choose_target
+    valid_targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
+  end
+
   private
 
   def zero
@@ -38,10 +42,6 @@ class Action
   def bonus_action_value
     return 0 if bonus_action
     character.bonus_actions.select(&:spell?).map(&:evaluate).max || 0
-  end
-
-  def choose_target
-    valid_targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end
 
   def evaluate_target target

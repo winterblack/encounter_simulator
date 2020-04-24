@@ -28,6 +28,10 @@ class Weapon < Action
     true
   end
 
+  def average_damage
+    damage_dice.average + damage_bonus
+  end
+
   private
 
   def valid_targets
@@ -38,10 +42,6 @@ class Weapon < Action
 
   def must_target_melee targets
     targets.any?(&:melee) && !ranged && !character.nimble_escape
-  end
-
-  def average_damage
-    damage_dice.average + damage_bonus
   end
 
   def strike
@@ -65,6 +65,7 @@ class Weapon < Action
   def effects
     character.engage target unless ranged
     draw_offhand_weapon if light && character.melee && character.pc?
+    character.helper = nil
   end
 
   def draw_offhand_weapon

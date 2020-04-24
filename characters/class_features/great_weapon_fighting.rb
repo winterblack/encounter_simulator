@@ -6,7 +6,7 @@ module GreatWeaponFighting
       die < 3 ? rand(1..type) : die
     end
 
-    p "Rolled #{rolled_dice.reduce(:+)} but then used great weapon fighting to get #{reroll.reduce(:+)}."
+    p "Rolled #{rolled_dice} and rerolled #{reroll}." if rolled_dice != reroll
 
     reroll.reduce(:+)
   end
