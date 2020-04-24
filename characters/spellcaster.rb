@@ -55,7 +55,6 @@ module Spellcaster
   private
 
   def memorize_spells
-    # add spells to actions in class
     actions.each { |action| action.character = self }
     bonus_actions.each { |action| action.character = self }
   end

@@ -137,7 +137,7 @@ class PlayerCharacter < Character
 
   def roll_hit_die
     healing = hit_dice.pop.roll + con
+    p "#{name} rolls a hit die."
     heal healing
-    p "#{name} rolls a hit die and gains #{healing} hp. #{name} is at #{current_hp} hp."
   end
 end

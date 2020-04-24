@@ -2,18 +2,17 @@ require_relative '../../actions/action'
 
 class SecondWind < Action
   def evaluate
-    return zero if unavailable
+    return zero if cannot
     healing = [average_healing, character_hp - character.current_hp].min
     @value = healing / character_hp.to_f
   end
 
   def perform
-    return if unavailable
+    binding.pry if cannot
+    p "#{character.name} uses Second Wind!"
     healing = healing_dice.roll + fighter_level
     character.heal(healing)
     character.second_wind_used = true
-
-    p "#{character.name} uses Second Wind! #{character.name} gains #{healing} hp. #{character.name} is at #{character.current_hp}."
   end
 
   private
@@ -26,7 +25,7 @@ class SecondWind < Action
     character.level
   end
 
-  def unavailable
+  def cannot
     character.second_wind_used
   end
 

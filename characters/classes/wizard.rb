@@ -23,9 +23,11 @@ class Wizard < PlayerCharacter
 
   def use_arcane_recovery
     spell_level = (level + 1) / 2
-    if spell_slots[spell_level] < spell_slots[spell_level]
+    if spell_slots[spell_level] < SpellSlotsByLevel[level][spell_level]
       self.spell_slots[spell_level] += 1
       self.arcane_recovery_used = true
+
+      p "#{name} uses arcane recovery. Spell slots: #{spell_slots[1..-1]}"
     end
   end
 

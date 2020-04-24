@@ -2,6 +2,7 @@ require_relative 'action'
 
 class Help < Action
   def perform
+    binding.pry if cannot
     choose_target.helper = character
     p "#{character.name} helps #{target.name}."
   end

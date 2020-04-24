@@ -36,7 +36,7 @@ class Weapon < Action
 
   def valid_targets
     targets = super
-    targets.select(&:melee) if must_target_melee(targets)
+    targets.select!(&:melee) if must_target_melee(targets)
     targets
   end
 

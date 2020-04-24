@@ -15,7 +15,7 @@ module HealingSpell
 
   def roll_healing
     healing = healing_dice.roll + character.spell_ability_score
-    p "#{character.name} heals #{target.name} for #{healing}."
+    p "#{character.name} heals #{target.name}."
     healing
   end
 

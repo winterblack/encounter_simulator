@@ -3,6 +3,7 @@ module Attack
   attr_reader :crit
 
   def perform
+    binding.pry if cannot
     @target = choose_target
     roll_to_hit
     @hit ? strike : miss

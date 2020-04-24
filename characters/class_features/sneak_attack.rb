@@ -19,9 +19,8 @@ module SneakAttack
   end
 
   def roll_damage
-    damage = damage_dice.roll(crit) + damage_bonus + roll_sneak_attack
-    p "#{character.name} sneak attacks #{target.name} for #{damage} damage!"
-    damage
+    p "#{character.name} sneak attacks #{target.name}!"
+    super + roll_sneak_attack
   end
 
   def roll_sneak_attack
