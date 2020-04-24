@@ -13,6 +13,7 @@ class Weapon < Action
   def initialize weapon
     entry = Weapons[weapon]
     @weapon = weapon
+    @name = weapon
     @damage_dice = Dice(entry['damage'])
     @finesse = entry['finesse'] || false
     @ranged = entry['ranged'] || false
@@ -28,28 +29,20 @@ class Weapon < Action
     true
   end
 
+  private
+
   def average_damage
     damage_dice.average + damage_bonus
   end
 
-  private
-
   def strike
     damage = roll_damage
-    p crit_message + hit_message(damage)
+    strike_message damage
     target.take damage
   end
 
   def roll_damage
     damage_dice.roll(crit) + damage_bonus
-  end
-
-  def crit_message
-    crit ? "#{character.name} crits! " : ""
-  end
-
-  def hit_message damage
-    "#{character.name} hits #{target.name} for #{damage} damage with #{weapon}."
   end
 
   def effects
@@ -64,7 +57,6 @@ class Weapon < Action
     offhand_weapon.attack_bonus = ability_bonus + character.proficiency_bonus
     offhand_weapon.damage_bonus = 0
     offhand_weapon.character = character
-    offhand_weapon.bonus_action = true
     offhand_weapon
   end
 end

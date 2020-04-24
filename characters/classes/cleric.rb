@@ -23,6 +23,7 @@ class Cleric < PlayerCharacter
       case spell
       when :healing_word then self.bonus_actions << HealingWord.new
       when :cure_wounds then self.actions << CureWounds.new
+      when :guiding_bolt then self.actions << GuidingBolt.new
       end
     end
     super

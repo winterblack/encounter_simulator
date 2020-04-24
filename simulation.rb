@@ -45,7 +45,11 @@ cleric = Cleric.new(
   wis: +3,
   ac: 18, #chain mail, shield
   weapons: ['mace'],
-  spells: [:healing_word, :cure_wounds],
+  spells: [
+    :healing_word,
+    :cure_wounds,
+    :guiding_bolt,
+  ],
   domain: :life
 )
 
@@ -77,17 +81,18 @@ Party = [cleric, fighter, rogue, wizard]
 # end
 
 encounters = []
-encounters << Encounter.new(Array.new(5) { Monster.new('Kobold') })
+# encounters << Encounter.new(Array.new(5) { Monster.new('Kobold') })
 # encounters << Encounter.new(Array.new(4) { Monster.new('Goblin') })
 # encounters << Encounter.new(Array.new(3) { Monster.new('Orc') })
-encounters << Encounter.new(Array.new(2) { Monster.new('Bugbear') })
-# encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
+# encounters << Encounter.new(Array.new(2) { Monster.new('Bugbear') })
+encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
+encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
 
 adventure = AdventuringDay.new(encounters)
 
 # adventure.run(Party)
 
-Trial.new(adventure, 10000).run Party
+Trial.new(adventure, 1000).run Party
 
 # # trials = []
 # #

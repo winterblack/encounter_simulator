@@ -1,5 +1,5 @@
 class Action
-  attr_accessor :character, :bonus_action
+  attr_accessor :character, :name
   attr_reader :target, :value
 
   def evaluate
@@ -40,7 +40,7 @@ class Action
   end
 
   def bonus_action_value
-    return 0 if bonus_action
+    return 0 if character.bonus_actions.include? self
     character.bonus_actions.select(&:spell?).map(&:evaluate).max || 0
   end
 

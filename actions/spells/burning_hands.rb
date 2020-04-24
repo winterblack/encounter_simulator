@@ -3,7 +3,6 @@ require_relative 'spell'
 class BurningHands < Spell
   include Save
   attr_reader :targets, :damage_roll
-
   Level = 1
 
   def evaluate

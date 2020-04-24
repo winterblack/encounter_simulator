@@ -2,12 +2,7 @@ require_relative 'healing_spell'
 
 class HealingWord < Spell
   include HealingSpell
-
   Level = 1
-
-  def initalize
-    @bonus_action = true
-  end
 
   private
 

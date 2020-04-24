@@ -9,15 +9,21 @@ class Help < Action
   private
 
   def valid_targets
-    character.allies.select(&:standing?).reject { |ally| ally == character }
+    character.allies.select(&:standing?).reject do |ally|
+      ally == character
+    end
   end
 
   def evaluate_target ally
     return 0 unless ally
-    attack = ally.actions.select(&:attack?).max { |a, b|
-      a.evaluate_help <=> b.evaluate_help
-    }
+    attack = ally_attack ally
     return 0 unless attack
     attack.evaluate_help
+  end
+
+  def ally_attack ally
+    ally.actions.select(&:attack?).max do |a, b|
+      a.evaluate_help <=> b.evaluate_help
+    end
   end
 end

@@ -85,6 +85,18 @@ module Attack
     p "#{character.name} attacks #{target.name} and misses!"
   end
 
+  def strike_message damage
+    p crit_message + hit_message(damage)
+  end
+
+  def crit_message
+    crit ? "#{character.name} crits! " : ""
+  end
+
+  def hit_message damage
+    "#{character.name} hits #{target.name} for #{damage} damage with #{name}."
+  end
+
   # Not used. More effective to just ignore familiar.
   def evaluate_familiar
     target.actions.map(&:evaluate).max * hit_chance

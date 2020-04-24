@@ -2,7 +2,6 @@ require_relative 'healing_spell'
 
 class CureWounds < Spell
   include HealingSpell
-
   Level = 1
 
   private
