@@ -21,14 +21,6 @@ class Wizard < PlayerCharacter
 
   private
 
-  def hd_type
-    6
-  end
-
-  def spell_ability
-    :int
-  end
-
   def use_arcane_recovery
     spell_level = (level + 1) / 2
     if spell_slots[spell_level] < spell_slots[spell_level]

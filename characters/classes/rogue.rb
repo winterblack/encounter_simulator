@@ -20,10 +20,6 @@ class Rogue < PlayerCharacter
 
   private
 
-  def hd_type
-    8
-  end
-
   def train_sneak_attack
     actions.select(&:weapon).each do |weapon|
       weapon.extend SneakAttack if weapon.ability == :dex
