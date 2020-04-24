@@ -21,10 +21,6 @@ class Spell < Action
     true
   end
 
-  def healing?
-    false
-  end
-
   private
 
   def worth_spell_slot

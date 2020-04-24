@@ -34,12 +34,13 @@ class GuidingBolt < Spell
     return 0 unless ally
     attack = ally_attack ally
     return 0 unless attack
-    value = attack.evaluate_help
+    attack.evaluate_help
   end
 
   def next_ally
     allies = character.allies.select(&:standing?).sort_by(&:initiative)
     index = allies.find_index(character)
+    return nil unless index
     allies[index - 1]
   end
 
@@ -65,5 +66,11 @@ class GuidingBolt < Spell
 
   def roll_damage
     damage_dice.roll(crit)
+  end
+
+  def effects
+    return if @hit == false || target.dead
+    target.glowing = true
+    p "#{target.name} is glowing."
   end
 end

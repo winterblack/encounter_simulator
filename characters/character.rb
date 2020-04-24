@@ -9,13 +9,14 @@ class Character
   attr_accessor :initiative, :current_hp, :melee, :dead
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
-  attr_accessor :helper
+  attr_accessor :helper, :glowing
 
   # monster features
   attr_reader :pack_tactics, :nimble_escape
 
   def initialize
-    @actions = [Help.new]
+    @actions = []
+    # @actions = [Help.new]
     actions.each { |action| action.character = self }
     @bonus_actions = []
     @engaged = []

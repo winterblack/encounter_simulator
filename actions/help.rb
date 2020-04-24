@@ -8,10 +8,11 @@ class Help < Action
 
   private
 
-  def valid_targets
-    character.allies.select(&:standing?).reject do |ally|
-      ally == character
-    end
+  def choose_target
+    return nil unless character.standing?
+    allies = character.allies.select(&:standing?).sort_by(&:initiative)
+    index = allies.find_index(character)
+    allies[index - 1]
   end
 
   def evaluate_target ally

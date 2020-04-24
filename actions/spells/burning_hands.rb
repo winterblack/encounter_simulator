@@ -22,6 +22,10 @@ class BurningHands < Spell
 
   private
 
+  def valid_targets
+    []
+  end
+
   def damage_dice
     @damage_dice ||= Dice '3d6'
   end

@@ -11,6 +11,11 @@ module HealingSpell
     true
   end
 
+  def evaluate_for_healing
+    return 0 if cannot
+    average_healing / character.hp.to_f
+  end
+
   private
 
   def roll_healing
@@ -40,6 +45,6 @@ module HealingSpell
   end
 
   def action_value
-    target.actions.map(&:evaluate).max
+    target.actions.map(&:evaluate_for_healing).max
   end
 end

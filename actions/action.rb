@@ -25,11 +25,26 @@ class Action
     false
   end
 
+  def healing?
+    false
+  end
+
   def choose_target
     valid_targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end
 
+  def evaluate_for_healing
+    return zero if cannot
+    @target = choose_target
+    return zero unless target
+    @value = evaluate_target(target)
+  end
+
   private
+
+  def bonus_action?
+    character.bonus_actions.include? self
+  end
 
   def zero
     @value = 0
@@ -40,7 +55,7 @@ class Action
   end
 
   def bonus_action_value
-    return 0 if character.bonus_actions.include? self
+    return 0 if bonus_action?
     character.bonus_actions.select(&:spell?).map(&:evaluate).max || 0
   end
 

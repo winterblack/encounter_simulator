@@ -46,6 +46,7 @@ module Attack
   def advantage?
     return true if character.helper
     return true if character.pack_tactics && character.allies.count > 1
+    return true if target.glowing
   end
 
   def valid_targets
@@ -65,6 +66,7 @@ module Attack
   end
 
   def roll_to_hit
+    p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
     roll = D20.roll advantage_disadvantage
     to_hit = roll + attack_bonus
     @hit = roll != 1 && to_hit >= target.ac
@@ -74,6 +76,7 @@ module Attack
   def effects
     character.engage target unless ranged
     engage_helper if character.helper
+    target.glowing = false if character.glowing
   end
 
   def engage_helper
