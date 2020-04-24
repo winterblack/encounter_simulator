@@ -2,7 +2,7 @@ class Outcome
   attr_reader :party, :rounds, :monsters
 
   def initialize party, rounds, monsters
-    @party = party.reject(&:familiar?)
+    @party = party
     @rounds = rounds
     @monsters = monsters
   end
@@ -12,7 +12,7 @@ class Outcome
   end
 
   def tpk?
-    party.none? &:standing
+    party.none? &:standing?
   end
 
   def remaining_hp

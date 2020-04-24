@@ -1,9 +1,8 @@
-require_relative '../character'
 require_relative '../player_character'
 require_relative '../spellcaster'
+require_relative '../class_features/disciple_of_life'
 
-class Cleric < Character
-  include PlayerCharacter
+class Cleric < PlayerCharacter
   include Spellcaster
   HD_Type = 8
   SpellAbility = :wis
@@ -11,7 +10,27 @@ class Cleric < Character
   def initialize options
     super(options)
     @melee = options[:melee] || true
+    @ranged = !melee
     @save_proficiencies = [:wis, :cha]
     @domain = options[:domain]
+    train_domains
+  end
+
+  private
+
+  def memorize_spells
+    spells.each do |spell|
+      case spell
+      when :healing_word then self.bonus_actions << HealingWord.new
+      when :cure_wounds then self.actions << CureWounds.new
+      end
+    end
+    super
+  end
+
+  def train_domains
+    memorized_spells.select(&:healing?).each do |spell|
+      spell.extend DiscipleOfLife
+    end
   end
 end

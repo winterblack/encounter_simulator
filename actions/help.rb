@@ -8,20 +8,20 @@ class Help < Action
 
   def perform
     ally = choose_ally
-    ally.helped_by = character
+    ally.helper = character
     p "#{character.name} helps #{ally.name}."
   end
 
   private
 
   def choose_ally
-    allies = character.allies.select(&:pc?).select(&:standing)
+    allies = character.allies.select(&:pc?).select(&:standing?)
     allies.max { |a, b| evaluate_ally(a) <=> evaluate_ally(b) }
   end
 
   def evaluate_ally ally
     return 0 if !ally
-    return 0 if ally.helped_by
+    return 0 if ally.helper
     attack = ally.actions.select(&:attack?).max do |a, b|
       a.evaluate <=> b.evaluate
     end

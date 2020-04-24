@@ -1,10 +1,9 @@
 require 'require_all'
-require_relative 'character'
 require_all 'actions/spells'
 
 module Spellcaster
-  attr_accessor :spell_slots, :spell_slots_remaining, :spell_cast_this_turn
-  attr_reader :spell_ability, :spell_ability_score, :spells, :domain
+  attr_accessor :spell_slots, :spell_cast_this_turn
+  attr_reader :spell_ability_score, :spells
   SpellSlotsByLevel = [
     [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
     [ 1, 2 ],
@@ -34,62 +33,47 @@ module Spellcaster
     @spell_ability_score = send self.class::SpellAbility
     @spells = options[:spells]
     memorize_spells
+    set_spell_slots
     set_spell_attack_bonus
     set_spell_save_dc
-    set_spell_slots
   end
 
   def take_turn
-    self.spell_cast_this_turn = false
     super
+    self.spell_cast_this_turn = false
   end
 
-  def before_short_rest
-    until (spell = choose_out_of_combat_spell).nil?
-      spell.perform
-    end
+  def spellcaster?
+    true
   end
 
   private
 
-  def choose_out_of_combat_spell
-    out_of_combat_spells.max do |a, b|
-      value_a = a.evaluate
-      value_b = b.evaluate
-      return nil if value_a == 0 && value_b == 0
-      value_a <=> value_b
-    end
+  def memorize_spells
+    # add spells to actions in class
+    actions.each { |action| action.character = self }
+    bonus_actions.each { |action| action.character = self }
+  end
+
+  def memorized_spells
+    (actions+bonus_actions).select(&:spell?)
+  end
+
+  def set_spell_slots
+    self.spell_slots = SpellSlotsByLevel[level].dup
   end
 
   def set_spell_attack_bonus
     attack_bonus = spell_ability_score + proficiency_bonus
-    actions.select(&:spell_attack?).each do |spell|
+    actions.select(&:spell?).select(&:attack?).each do |spell|
       spell.attack_bonus = attack_bonus
     end
   end
 
   def set_spell_save_dc
     save_dc = 8 + proficiency_bonus + spell_ability_score
-    actions.select(&:save?).each do |spell|
+    actions.select(&:spell?).select(&:save?).each do |spell|
       spell.save_dc = save_dc
     end
-  end
-
-  def set_spell_slots
-    self.spell_slots = SpellSlotsByLevel[level].dup
-    self.spell_slots_remaining = SpellSlotsByLevel[level].dup
-  end
-
-  def memorize_spells
-    self.actions << BurningHands.new if spells.include? :burning_hands
-    self.actions << ShockingGrasp.new if spells.include? :shocking_grasp
-    self.actions << CureWounds.new if spells.include? :cure_wounds
-    self.bonus_actions << HealingWord.new if spells.include? :healing_word
-    actions.each { |action| action.character = self }
-    bonus_actions.each { |action| action.character = self }
-  end
-
-  def out_of_combat_spells
-    (actions + bonus_actions).select(&:spell?).select(&:out_of_combat?)
   end
 end

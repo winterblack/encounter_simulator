@@ -1,31 +1,32 @@
-require_relative '../character'
 require_relative '../player_character'
+require_relative '../class_features/sneak_attack'
 
-class Rogue < Character
-  include PlayerCharacter
+class Rogue < PlayerCharacter
   HD_Type = 8
   attr_accessor :sneak_attack_used
 
   def initialize options
     super(options)
     @melee = options[:melee] || false
+    @ranged = !melee
     @save_proficiencies = [:dex, :int]
-    set_sneak_attack
+    train_sneak_attack
+  end
+
+  def take_turn
+    super
+    self.sneak_attack_used = false
   end
 
   private
 
-  def end_turn
-    self.sneak_attack_used = false
+  def hd_type
+    8
   end
 
-  def set_sneak_attack
-    @sneak_attack = Dice "#{(level+1)/2}d6"
-    sneaking_attacks = actions.select(&:weapon?).select do |weapon|
-      weapon.ability == :dex
-    end
-    sneaking_attacks.each do |attack|
-      attack.sneak_attack = sneak_attack
+  def train_sneak_attack
+    actions.select(&:weapon).each do |weapon|
+      weapon.extend SneakAttack if weapon.ability == :dex
     end
   end
 end

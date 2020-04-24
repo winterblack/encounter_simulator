@@ -11,7 +11,7 @@ class AdventuringDay
     @party = party
     encounters.each do |encounter|
       outcomes << encounter.run(party)
-      break if party.none? &:standing
+      break if party.none? &:standing?
       short_rest
     end
     outcome
@@ -30,9 +30,9 @@ class AdventuringDay
   def short_rest
     print "\nThe party takes a short rest.\n"
 
-    party.select(&:standing).each &:before_short_rest
-    party.select(&:standing).each &:short_rest
-    party.select(&:melee).select(&:ranged).each &:sheath_weapons
+    party.select(&:standing?).each &:before_short_rest
+    party.select(&:standing?).each &:short_rest
+    party.each &:sheath_weapons
   end
 
   def outcome

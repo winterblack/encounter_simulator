@@ -1,123 +1,94 @@
 club:
-  ability: str
   damage: 1d4
   light: true
 dagger:
-  ability: dex
   damage: 1d4
+  finesse: true
   light: true
 greatclub:
-  ability: str
   damage: 1d8
   great: true
 handaxe:
-  ability: str
   damage: 1d6
   light: true
 javelin:
-  ability: str
   damage: 1d6
 light hammer:
-  ability: str
   damage: 1d4
   light: true
 mace:
-  ability: str
   damage: 1d6
 quarterstaff:
-  ability: str
   damage: 1d6
 sickle:
-  ability: str
   damage: 1d4
   light: true
 spear:
-  ability: str
   damage: 1d6
 light crossbow:
-  ability: dex
   damage: 1d8
   ranged: true
 dart:
-  ability: dex
   damage: 1d6
   ranged: true
 shortbow:
-  ability: dex
   damage: 1d6
   ranged: true
 sling:
-  ability: dex
   damage: 1d4
   ranged: true
 battleaxe:
-  ability: str
   damage: 1d8
 flail:
-  ability: str
   damage: 1d8
 glaive:
-  ability: str
   damage: 1d10
   great: true
 greataxe:
-  ability: str
   damage: 1d12
   great: true
 greatsword:
-  ability: str
   damage: 2d6
   great: true
 halberd:
-  ability: str
   damage: 1d10
   great: true
 longsword:
-  ability: str
   damage: 1d8
 maul:
-  ability: str
   damage: 2d6
   great: true
 morningstar:
-  ability: str
   damage: 1d8
 pike:
-  ability: str
   damage: 1d10
   great: true
 rapier:
-  ability: dex
   damage: 1d8
+  finesse: true
 scimitar:
-  ability: dex
   damage: 1d6
+  finesse: true
   light: true
 shortsword:
-  ability: dex
   damage: 1d6
+  finesse: true
   light: true
 trident:
-  ability: str
   damage: 1d6
 war pick:
-  ability: str
   damage: 1d8
 warhammer:
-  ability: str
   damage: 1d8
 whip:
-  ability: dex
+  finesse: true
   damage: 1d4
 hand crossbow:
-  ability: dex
   damage: 1d6
   ranged: true
 heavy crossbow:
-  ability: dex
   damage: 1d10
   ranged: true
 longbow:
-  ability: dex
   damage: 1d8
   ranged: true

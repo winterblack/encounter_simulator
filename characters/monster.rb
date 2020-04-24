@@ -1,13 +1,13 @@
 require 'yaml'
 require_relative 'character'
-require_relative '../actions/weapon'
-
-Monsters = YAML.load(File.read 'monsters.yaml')
 
 class Monster < Character
   attr_reader :monster, :challenge
 
+  Monsters = YAML.load(File.read 'monsters.yaml')
+
   def initialize monster, name=monster
+    super()
     entry = Monsters[monster]
     @monster = monster
     @name = name
@@ -19,14 +19,11 @@ class Monster < Character
     @int = entry['int'] || 0
     @wis = entry['wis'] || 0
     @cha = entry['cha'] || 0
-    @challenge = entry['challenge'] || 1
-    @melee = entry['melee'] || true
+    @level = entry['challenge']
+    @melee = entry['melee']
     @weapons = entry['weapons'] || []
     @current_hp = hp
-    @actions = []
-    @bonus_actions = []
-    @engaged = []
-    @save_proficiencies = []
+    @save_proficiencies = entry['save_proficiencies'] || []
     set_proficiency_bonus
     equip_weapons
     entry['features']&.each { |feature| add_feature feature }
@@ -36,22 +33,30 @@ class Monster < Character
     Monster.new(monster, name)
   end
 
+  def inspect
+    p "#<#{self.class} hp=#{current_hp}#{' dead' if dead}>"
+  end
+
   private
 
   def add_feature feature
     case feature
-    when 'pack tactics'
-      self.pack_tactics = true
-    when 'nimble escape'
-      self.nimble_escape = true
-    when 'brute'
-      actions.select(&:weapon?).reject(&:ranged).each do |weapon|
-        weapon.damage_dice.count += 1
-      end
-    when 'large'
-      actions.select(&:weapon?).each do |weapon|
-        weapon.damage_dice.count += 1
-      end
+    when 'pack tactics' then @pack_tactics = true
+    when 'nimble escape' then @nimble_escape = true
+    when 'brute' then add_brute_to_weapons
+    when 'large' then add_large_to_weapons
+    end
+  end
+
+  def add_brute_to_weapons
+    actions.select(&:weapon?).reject(&:ranged).each do |weapon|
+      weapon.damage_dice.count += 1
+    end
+  end
+
+  def add_large_to_weapons
+    actions.select(&:weapon?).each do |weapon|
+      weapon.damage_dice.count += 1
     end
   end
 end

@@ -1,5 +1,4 @@
 require_relative 'outcome'
-require_relative 'characters/classes/familiar'
 
 class Encounter
   attr_accessor :monsters
@@ -39,17 +38,10 @@ class Encounter
   end
 
   def get_ready
-    print "\nNew Encounter\n"
-    summon_familiar
     assign_allies_and_foes
     characters.each &:roll_initiative
-  end
 
-  def summon_familiar
-    party.select(&:familiar?).each { |familiar| party.delete(familiar) }
-    party.select { |pc| pc.spells.include?(:find_familiar) }.each do
-      party << Familiar.new
-    end
+    print "\n New Encounter \n"
   end
 
   def characters
@@ -68,14 +60,14 @@ class Encounter
   end
 
   def over
-    party.reject(&:familiar?).none?(&:standing) || monsters.none?(&:standing)
+    party.none?(&:standing?) || monsters.none?(&:standing?)
   end
 
   def outcome
-    if party.none? &:standing
-      print "\nTPK\n"
+    if party.none? &:standing?
+      print "\n TPK \n"
     else
-      print "\nThe party was victorious. #{party.reject(&:familiar?).count &:dead} characters died.\n"
+      print "\n The party was victorious. #{party.count &:dead} characters died. \n"
     end
     monster_types = monsters.map(&:monster)
     Outcome.new party, round, monster_types
