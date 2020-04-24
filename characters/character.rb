@@ -89,7 +89,7 @@ class Character
     self.current_hp = 0
     disengage
 
-    p "#{name} died!"
+    p "#{name} dies!"
   end
 
   def set_proficiency_bonus

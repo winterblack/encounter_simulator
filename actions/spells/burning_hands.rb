@@ -66,11 +66,11 @@ class BurningHands < Spell
   def roll_saves
     targets.each do |target|
       if target.roll_save(:dex) < save_dc
-        target.take damage_roll
         p "#{target.name} burns for #{damage_roll} damage."
+        target.take damage_roll
       else
-        target.take(damage_roll/2)
         p "#{target.name} burns for #{damage_roll/2} damage."
+        target.take(damage_roll/2)
       end
     end
   end

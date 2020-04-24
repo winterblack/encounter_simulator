@@ -80,6 +80,9 @@ class Encounter
       print "\n The party was victorious. #{party.count &:dead} characters died. \n"
     end
     monster_types = monsters.map(&:monster)
+    party.each do |character|
+      p character
+    end
     Outcome.new party, round, monster_types
   end
 end

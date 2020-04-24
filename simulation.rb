@@ -85,7 +85,9 @@ encounters << Encounter.new(Array.new(3) { Monster.new('Goblin') })
 
 adventure = AdventuringDay.new(encounters)
 
-Trial.new(adventure, 10000).run Party
+adventure.run(Party)
+
+# Trial.new(adventure, 10000).run Party
 #
 # # trials = []
 # #

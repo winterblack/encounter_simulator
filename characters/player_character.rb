@@ -122,7 +122,7 @@ class PlayerCharacter < Character
       p "#{name} is stable."
     end
     die if death_saves.count(false) > 2
-    p "death saves=#{death_saves}"
+    p "death saves: #{death_saves}"
   end
 
   def set_starting_hp

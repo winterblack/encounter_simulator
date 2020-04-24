@@ -52,6 +52,6 @@ module Attack
   end
 
   def miss
-    p "#{character.name} missed!"
+    p "#{character.name} attacks #{target.name} and misses!"
   end
 end
