@@ -4,7 +4,7 @@ module Attack
 
   def perform
     trigger_opportunity_attack
-    # check if still standing
+    return unless character.standing?
     @target = choose_target
     roll_to_hit
     @hit ? strike : miss

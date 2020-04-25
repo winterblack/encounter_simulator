@@ -30,6 +30,7 @@ class Character
     print "\nIt's #{name}'s turn.\n"
     action = choose_action
     action.perform if action && action.evaluate > 0
+    return unless standing?
     bonus_action = choose_bonus_action
     bonus_action.perform if bonus_action && bonus_action.evaluate > 0
   end

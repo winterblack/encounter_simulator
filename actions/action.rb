@@ -34,9 +34,9 @@ class Action
   end
 
   def evaluate_for_healing
-    return zero if cannot
+    return 0 if cannot
     @target = choose_target
-    return zero unless target
+    return 0 unless target
     @value = evaluate_target(target)
   end
 
