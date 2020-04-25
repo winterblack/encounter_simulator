@@ -30,7 +30,7 @@ class Action
   end
 
   def choose_target
-    valid_targets.max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
+    engaged_first(valid_targets).max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end
 
   def evaluate_for_healing
@@ -41,6 +41,10 @@ class Action
   end
 
   private
+
+  def engaged_first targets
+    targets.sort { |target| target.engaged.any? ? 0 : 1 }
+  end
 
   def bonus_action?
     character.bonus_actions.include? self

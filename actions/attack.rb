@@ -3,6 +3,8 @@ module Attack
   attr_reader :crit, :ranged
 
   def perform
+    trigger_opportunity_attack
+    # check if still standing
     @target = choose_target
     roll_to_hit
     @hit ? strike : miss
@@ -22,7 +24,22 @@ module Attack
     average_damage * (advantage - chance) / target.current_hp.to_f
   end
 
+  def evaluate_one_attack
+    return zero if cannot
+    @target = choose_target
+    return zero unless target
+    @value = evaluate_target(target)
+  end
+
   private
+
+  def trigger_opportunity_attack
+    return if ranged || character.engaged.none?
+    return if character.engaged.include? target
+    character.engaged.each do |foe|
+      foe.opportunity_attack character
+    end
+  end
 
   def hit_chance
     chance = (21 + attack_bonus - target.ac) / 20.0
@@ -56,13 +73,24 @@ module Attack
   end
 
   def must_target_melee targets
-    targets.reject(&:familiar?).any?(&:melee) && !ranged && !character.nimble_escape
+    return false if ranged || character.engaged.any?
+    targets.reject(&:familiar?).any?(&:melee)
   end
 
   def evaluate_target target
     super
-    return 0 if target.familiar?
-    average_damage * hit_chance / target.current_hp
+    return zero if target.familiar?
+    value = average_damage * hit_chance / target.current_hp
+    # may want to adjust for getting attacked by OA first
+    value - evaluate_opportunity_attacks
+  end
+
+  def evaluate_opportunity_attacks
+    return 0 if ranged || character.engaged.none?
+    return 0 if character.engaged.include? target
+    character.engaged.map do |foe|
+      foe.opportunity_attack_value(character)
+    end.compact.max || 0
   end
 
   def roll_to_hit
@@ -74,7 +102,7 @@ module Attack
   end
 
   def effects
-    character.engage target unless ranged
+    character.engage target unless ranged || !target.standing? # TODO: don't engage on opportunity attacks
     engage_helper if character.helper
     target.glowing = false if character.glowing
   end

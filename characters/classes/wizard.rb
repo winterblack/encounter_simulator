@@ -19,6 +19,10 @@ class Wizard < PlayerCharacter
     use_arcane_recovery unless arcane_recovery_used
   end
 
+  def inspect
+    "#<#{self.class} hp=#{current_hp} hit_dice=[#{hit_dice_string}]#{" arcane_recovery_used" if arcane_recovery_used}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+  end
+
   private
 
   def use_arcane_recovery

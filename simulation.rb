@@ -59,39 +59,39 @@ cleric = Cleric.new(
 Party = [cleric, fighter, rogue, wizard]
 
 encounters = []
-encounters << Encounter.new(Array.new(5) { Monster.new('Kobold') })
-# encounters << Encounter.new(Array.new(4) { Monster.new('Goblin') })
-# encounters << Encounter.new(Array.new(3) { Monster.new('Orc') })
-# encounters << Encounter.new(Array.new(2) { Monster.new('Bugbear') })
-encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
+encounters << Encounter.new(Array.new(4) { Monster.new('Kobold') })
+encounters << Encounter.new(Array.new(3) { Monster.new('Goblin') })
+encounters << Encounter.new(Array.new(2) { Monster.new('Orc') })
+encounters << Encounter.new(Array.new(1) { Monster.new('Bugbear') })
+# encounters << Encounter.new(Array.new(1) { Monster.new('Ogre') })
 
 adventure = AdventuringDay.new(encounters)
 
 adventure.run(Party)
 
-# Trial.new(adventure, 1000).run Party
-
-trials = []
-
-Party.repeated_combination(4).each do |party|
-  trials << Trial.new(adventure, 10000/36/encounters.count).run(party)
-end
-
-control = Trial.new(adventure, 10000/36/encounters.count).run(Party)
-
-no_death_trial = trials.max { |a, b| a.death_chance(0) <=> b.death_chance(0) }
-no_tpk_trial = trials.min { |a, b| a.tpk_chance <=> b.tpk_chance }
-someone_dies_trial = trials.min { |a, b| a.death_chance(0) <=> b.death_chance(0) }
-everyone_dies_trial = trials.max { |a, b| a.tpk_chance <=> b.tpk_chance }
-
-print "Control"
-control.outcome
-
-print "No one dies trial"
-no_death_trial.outcome
-print "No TPK trial"
-no_tpk_trial.outcome
-print "Someone dies trial"
-someone_dies_trial.outcome
-print "Everyone dies trial"
-everyone_dies_trial.outcome
+Trial.new(adventure, 1000).run Party
+#
+# trials = []
+#
+# Party.repeated_combination(4).each do |party|
+#   trials << Trial.new(adventure, 10000/36/encounters.count).run(party)
+# end
+#
+# control = Trial.new(adventure, 10000/36/encounters.count).run(Party)
+#
+# no_death_trial = trials.max { |a, b| a.death_chance(0) <=> b.death_chance(0) }
+# no_tpk_trial = trials.min { |a, b| a.tpk_chance <=> b.tpk_chance }
+# someone_dies_trial = trials.min { |a, b| a.death_chance(0) <=> b.death_chance(0) }
+# everyone_dies_trial = trials.max { |a, b| a.tpk_chance <=> b.tpk_chance }
+#
+# print "Control"
+# control.outcome
+#
+# print "No one dies trial"
+# no_death_trial.outcome
+# print "No TPK trial"
+# no_tpk_trial.outcome
+# print "Someone dies trial"
+# someone_dies_trial.outcome
+# print "Everyone dies trial"
+# everyone_dies_trial.outcome

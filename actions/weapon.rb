@@ -21,12 +21,24 @@ class Weapon < Action
     @light = entry['light'] || false
   end
 
+  def opportunity_attack target
+    @target = target
+    roll_to_hit
+    @hit ? strike : miss
+    effects
+  end
+
   def ability
     (ranged || finesse) ? :dex : :str
   end
 
   def weapon?
     true
+  end
+
+  def one_attack_value target
+    @target = target
+    average_damage * hit_chance / target.current_hp
   end
 
   private

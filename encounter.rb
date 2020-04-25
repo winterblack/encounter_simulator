@@ -43,7 +43,7 @@ class Encounter
     assign_allies_and_foes
     characters.each &:roll_initiative
 
-    print "\n New Encounter \n"
+    print "\n New Encounter #{monsters.map(&:name).join(", ")}\n"
   end
 
   def characters

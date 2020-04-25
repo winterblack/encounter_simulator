@@ -16,7 +16,7 @@ class Character
 
   def initialize
     @actions = []
-    # @actions = [Help.new]
+    @actions = [Help.new]
     actions.each { |action| action.character = self }
     @bonus_actions = []
     @engaged = []
@@ -28,7 +28,6 @@ class Character
 
   def take_turn
     print "\nIt's #{name}'s turn.\n"
-    $current_turn = self
     action = choose_action
     action.perform if action && action.evaluate > 0
     bonus_action = choose_bonus_action
@@ -56,7 +55,7 @@ class Character
 
   def engage target
     self.melee = true
-    p "#{name} engages #{target.name}."
+    p "#{name} engages #{target.name}." unless engaged.include? target
     self.engaged << target unless self.engaged.include? target
     target.engaged << self unless target.engaged.include? self
   end
@@ -82,7 +81,26 @@ class Character
     "#<#{self.class} hp=#{current_hp}>"
   end
 
+  def opportunity_attack target
+    weapon = melee_weapons.max do |weapon|
+      weapon.one_attack_value target
+    end
+    return unless weapon
+    p "#{name} makes an opportunity attack against #{target.name}!"
+    weapon.opportunity_attack target
+  end
+
+  def opportunity_attack_value target
+    melee_weapons.map do |weapon|
+      weapon.one_attack_value target
+    end.max
+  end
+
   private
+
+  def melee_weapons
+    actions.select(&:weapon?).reject(&:ranged)
+  end
 
   def choose_action
     actions.max { |a, b| a.evaluate <=> b.evaluate }

@@ -48,7 +48,7 @@ module Spellcaster
   end
 
   def inspect
-    "#<#{self.class} hp=#{current_hp} hit_dice=#{hit_dice.map &:type} spell_slots=#{spell_slots[1..-1]}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "#<#{self.class} hp=#{current_hp} hit_dice=[#{hit_dice_string}] spell_slots=#{spell_slots[1..-1]}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
 

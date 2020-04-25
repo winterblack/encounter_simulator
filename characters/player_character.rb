@@ -72,7 +72,11 @@ class PlayerCharacter < Character
   end
 
   def inspect
-    "#<#{self.class} hp=#{current_hp} hit_dice=#{hit_dice.map &:type}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+    "#<#{self.class} hp=#{current_hp} hit_dice=[#{hit_dice_string}]#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+  end
+
+  def hit_dice_string
+    hit_dice.map { |hd| 'd' + hd.type.to_s}.join(', ')
   end
 
   private

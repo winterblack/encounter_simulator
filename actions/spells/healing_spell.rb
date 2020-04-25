@@ -12,7 +12,7 @@ module HealingSpell
   end
 
   def evaluate_for_healing
-    return 0 if cannot
+    return zero if cannot
     average_healing / character.hp.to_f
   end
 
