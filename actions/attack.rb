@@ -3,9 +3,9 @@ module Attack
   attr_reader :crit, :ranged
 
   def perform
+    @target = choose_target
     trigger_opportunity_attack
     return unless character.standing?
-    @target = choose_target
     roll_to_hit
     @hit ? strike : miss
     effects
@@ -37,8 +37,9 @@ module Attack
     return if ranged || character.engaged.none?
     return if character.engaged.include? target
     character.engaged.each do |foe|
-      foe.opportunity_attack character
+      foe.opportunity_attack(character) unless foe.reaction_used
     end
+    character.disengage
   end
 
   def hit_chance
@@ -62,8 +63,16 @@ module Attack
 
   def advantage?
     return true if character.helper
-    return true if character.pack_tactics && character.allies.count > 1
+    return true if pack_tactics?
     return true if target.glowing
+  end
+
+  def pack_tactics?
+    return false unless character.pack_tactics
+    return true if ranged && character.allies.count > 1
+    character.engaged.any? do |foe|
+      foe.engaged.include?(character) && foe.engaged.count > 1
+    end
   end
 
   def valid_targets
@@ -81,7 +90,6 @@ module Attack
     super
     return zero if target.familiar?
     value = average_damage * hit_chance / target.current_hp
-    # may want to adjust for getting attacked by OA first
     value - evaluate_opportunity_attacks
   end
 
@@ -125,7 +133,7 @@ module Attack
   end
 
   def hit_message damage
-    "#{character.name} hits #{target.name} for #{damage} damage with #{name}."
+    "#{character.name} hits #{target.name} for #{damage} damage with a #{name}."
   end
 
   # Not used. More effective to just ignore familiar.

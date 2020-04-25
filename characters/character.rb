@@ -6,7 +6,7 @@ class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
   attr_reader :ac, :hp, :proficiency_bonus
   attr_reader :save_proficiencies, :weapons
-  attr_accessor :initiative, :current_hp, :melee, :dead
+  attr_accessor :initiative, :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
   attr_accessor :helper, :glowing
@@ -28,6 +28,7 @@ class Character
 
   def take_turn
     print "\nIt's #{name}'s turn.\n"
+    self.reaction_used = false
     action = choose_action
     action.perform if action && action.evaluate > 0
     return unless standing?
@@ -88,10 +89,13 @@ class Character
     end
     return unless weapon
     p "#{name} makes an opportunity attack against #{target.name}!"
+    disengage
     weapon.opportunity_attack target
+    self.reaction_used = true
   end
 
   def opportunity_attack_value target
+    return 0 if reaction_used
     melee_weapons.map do |weapon|
       weapon.one_attack_value target
     end.max

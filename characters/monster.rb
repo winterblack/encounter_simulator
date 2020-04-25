@@ -6,11 +6,11 @@ class Monster < Character
 
   Monsters = YAML.load(File.read 'monsters.yaml')
 
-  def initialize monster, name=monster
+  def initialize monster, name=nil
     super()
     entry = Monsters[monster]
     @monster = monster
-    @name = "#{name} #{object_id}"
+    @name = name || "#{monster} #{object_id}"
     @ac = entry['ac']
     @hp = entry['hp']
     @str = entry['str'] || 0
@@ -22,8 +22,8 @@ class Monster < Character
     @level = entry['challenge']
     @melee = entry['melee']
     @weapons = entry['weapons'] || []
-    @current_hp = hp
     @save_proficiencies = entry['save_proficiencies'] || []
+    @current_hp = hp
     set_proficiency_bonus
     equip_weapons
     entry['features']&.each { |feature| add_feature feature }

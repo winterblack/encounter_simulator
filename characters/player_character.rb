@@ -53,6 +53,7 @@ class PlayerCharacter < Character
   end
 
   def before_short_rest
+    self.reaction_used = false
     until (actions+bonus_actions).map(&:evaluate).none? { |value| value > 0 }
       take_turn
     end
@@ -101,20 +102,21 @@ class PlayerCharacter < Character
   end
 
   def roll_death_save
+    print "\nIt's #{name}'s turn.\n"
     roll = D20.roll
     case roll
     when 1
-      self.death_saves += [false, false]
       p "#{name} critically failed a death save!"
+      self.death_saves += [false, false]
     when 2..9
-      self.death_saves << false
       p "#{name} failed a death save."
+      self.death_saves << false
     when 10..19
-      self.death_saves << true
       p "#{name} succeeded a death save."
+      self.death_saves << true
     when 20
-      heal 1
       p "#{name} critically succeeded a death save! #{name} is back in the fight."
+      heal 1
       take_turn
     end
     if death_saves.count(true) > 2

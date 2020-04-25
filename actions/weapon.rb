@@ -25,7 +25,6 @@ class Weapon < Action
     @target = target
     roll_to_hit
     @hit ? strike : miss
-    effects
   end
 
   def ability
