@@ -5,13 +5,20 @@ class Wizard < PlayerCharacter
   include Spellcaster
   HD_Type = 6
   SpellAbility = :int
-  attr_accessor :arcane_recovery_used
+  attr_accessor :arcane_recovery_used, :reactions, :shield, :shield_active
 
   def initialize options
     super(options)
     @melee = options[:melee] || false
     @ranged = !melee
     @save_proficiencies = [:int, :wis]
+  end
+
+  def take_turn
+    if self.shield_active
+      self.ac -= 5
+      self.shield_active = false
+    end
   end
 
   def short_rest
@@ -21,6 +28,11 @@ class Wizard < PlayerCharacter
 
   def inspect
     "#<#{self.class} hp=#{current_hp} hit_dice=[#{hit_dice_string}] spell_slots=#{spell_slots[1..-1]}#{" arcane_recovery_used" if arcane_recovery_used}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
+  end
+
+  def trigger_shield attack
+    return unless spells.include?(:shield)
+    shield.perform if shield.evaluate(attack) > 0
   end
 
   private
@@ -39,6 +51,7 @@ class Wizard < PlayerCharacter
     spells.each do |spell|
       case spell
       when :burning_hands then self.actions << BurningHands.new
+      when :shield then self.shield = Shield.new self
       end
     end
     super

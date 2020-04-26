@@ -2,6 +2,10 @@ class Action
   attr_accessor :character, :name
   attr_reader :target, :value
 
+  def perform
+    # required for super
+  end
+
   def evaluate
     return zero if cannot
     @target = choose_target

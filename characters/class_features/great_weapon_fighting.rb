@@ -8,6 +8,6 @@ module GreatWeaponFighting
 
     p "Rolled #{rolled_dice} and rerolled #{reroll}." if rolled_dice != reroll
 
-    reroll.reduce(:+)
+    reroll.sum
   end
 end

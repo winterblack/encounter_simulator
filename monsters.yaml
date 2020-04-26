@@ -40,6 +40,7 @@ Orc:
   wis: +0
   cha: +0
   challenge: 1/2
+  features: [aggressive]
   weapons: [greataxe]
   melee: true
 

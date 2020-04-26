@@ -31,13 +31,29 @@ module Attack
     @value = evaluate_target(target)
   end
 
+  def evaluate_for_shield
+    average_damage / target.current_hp.to_f
+  end
+
   private
 
   def trigger_opportunity_attack
-    return if ranged || character.engaged.none?
+    if character.aggressive && character.engaged.none? && !target.melee
+      valid_foes = character.foes.select(&:melee).select(&:standing?).reject(&:reaction_used).reject(&:familiar?)
+      p "#{character.name} is aggressive!" if valid_foes.any?
+      valid_foes.each do |foe|
+        foe.opportunity_attack(character)
+      end
+    end
+    if character.nimble_escape
+      if character.engaged.any? && !character.engaged.include?(target)
+        p "Nimble escape!"
+      end
+    end
+    return if ranged || character.engaged.none? || character.nimble_escape
     return if character.engaged.include? target
-    character.engaged.each do |foe|
-      foe.opportunity_attack(character) unless foe.reaction_used
+    character.engaged.reject(&:reaction_used).each do |foe|
+      foe.opportunity_attack(character)
     end
     character.disengage
   end
@@ -82,7 +98,7 @@ module Attack
   end
 
   def must_target_melee targets
-    return false if ranged || character.engaged.any?
+    return false if ranged || character.engaged.any? || character.aggressive
     targets.reject(&:familiar?).any?(&:melee)
   end
 
@@ -90,21 +106,28 @@ module Attack
     super
     return zero if target.familiar?
     value = average_damage * hit_chance / target.current_hp
+    value = [value, hit_chance].min
     value - evaluate_opportunity_attacks
   end
 
   def evaluate_opportunity_attacks
-    return 0 if ranged || character.engaged.none?
+    if character.aggressive && character.engaged.none? && !target.melee
+      return character.foes.select(&:melee).select(&:standing?).reject(&:familiar?).map do |foe|
+        foe.opportunity_attack_value(character)
+      end.sum
+    end
+    return 0 if ranged || character.engaged.none? || character.nimble_escape
     return 0 if character.engaged.include? target
-    character.engaged.map do |foe|
+    character.engaged.select(&:standing?).reject(&:familiar?).map do |foe|
       foe.opportunity_attack_value(character)
-    end.compact.max || 0
+    end.sum
   end
 
   def roll_to_hit
     p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
     roll = D20.roll advantage_disadvantage
     to_hit = roll + attack_bonus
+    target.trigger_shield(self) if target.respond_to? :trigger_shield
     @hit = roll != 1 && to_hit >= target.ac
     @crit = roll == 20
   end

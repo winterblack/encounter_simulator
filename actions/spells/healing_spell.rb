@@ -4,7 +4,7 @@ module HealingSpell
   def perform
     super
     healing = roll_healing
-    choose_target.heal healing
+    target.heal healing
   end
 
   def healing?
@@ -14,7 +14,7 @@ module HealingSpell
   def evaluate_for_healing
     return 0 if cannot
     @target = character
-    average_healing / target.hp.to_f
+    average_healing_value / target.hp.to_f
   end
 
   private
@@ -31,14 +31,17 @@ module HealingSpell
 
   def evaluate_target target
     super
-    value = average_healing / target.hp.to_f
+    value = average_healing_value / target.hp.to_f
     target.standing? ? value : value + action_value
   end
 
+  def average_healing_value
+    max_healing = [average_healing, target.hp - target.current_hp].min
+    Math.sqrt(average_healing * max_healing)
+  end
+
   def average_healing
-    average = healing_dice.average + character.spell_ability_score
-    max = target.hp - target.current_hp
-    Math.sqrt(average * max)
+    @average ||= healing_dice.average + character.spell_ability_score
   end
 
   def action_value

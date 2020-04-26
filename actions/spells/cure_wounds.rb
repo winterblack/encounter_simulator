@@ -1,6 +1,7 @@
 require_relative 'healing_spell'
 
-class CureWounds < Spell
+class CureWounds < Action
+  include Spell
   include HealingSpell
   Level = 1
 

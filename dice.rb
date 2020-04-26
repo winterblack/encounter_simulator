@@ -10,7 +10,7 @@ class Dice
 
   def roll crit=false
     dice = crit ? count * 2 : count
-    dice.times.collect { rand 1..type }.reduce(:+)
+    dice.times.collect { rand 1..type }.sum
   end
 
   def average

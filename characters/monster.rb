@@ -43,6 +43,7 @@ class Monster < Character
     case feature
     when 'pack tactics' then @pack_tactics = true
     when 'nimble escape' then @nimble_escape = true
+    when 'aggressive' then @aggressive = true
     when 'brute' then add_brute_to_weapons
     when 'large' then add_large_to_weapons
     end

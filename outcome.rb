@@ -17,8 +17,8 @@ class Outcome
 
   def remaining_hp
     return 0 if tpk?
-    total_hp = party.map(&:hp).reduce(:+)
-    total_remaining_hp = party.map(&:current_hp).reduce(:+)
+    total_hp = party.map(&:hp).sum
+    total_remaining_hp = party.map(&:current_hp).sum
     total_remaining_hp / total_hp.to_f
   end
 end

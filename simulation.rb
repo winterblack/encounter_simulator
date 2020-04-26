@@ -9,10 +9,16 @@ require_relative 'trial'
 def run_simulation args
   if args.include?('parties')
     Simulation.new.run_party_combinations
+  elsif args.include?('hard')
+    Simulation.new.run_hard_encounters
   elsif args.include?('monsters')
     Simulation.new.run_monster_combinations
+  elsif args.include?('monster-balance')
+    Simulation.new.run_monster_balance
+  elsif args.include?('balanced')
+    Simulation.new.run_balanced
   else
-    Simulation.new.run
+    Simulation.new(count: 1000).run
   end
 end
 
@@ -21,17 +27,26 @@ class Simulation
 
   def initialize options={}
     @scenerio = options[:scenerio] || standard_scenerio
-    @count = options[:count] || 45360
+    @count = options[:count] || 100
     @party = options[:party] || standard_party
     @trials = []
   end
 
+  def run_balanced
+    combined_trials = Trial.new(nil, 0)
+    combined_trials.party = party
+    balanced_adventures.each do |adventure|
+      outcomes = Trial.new(adventure, count).run(party).outcomes
+      combined_trials.outcomes += outcomes
+    end
+    combined_trials.outcome
+  end
+
   def run
-    Trial.new(scenerio, count/4).run party
+    Trial.new(scenerio, count).run(party).outcomes
   end
 
   def run_party_combinations
-    @count = party_combination_count
     party_combinations.each do |party|
       self.trials << Trial.new(scenerio, count).run(party)
     end
@@ -39,35 +54,82 @@ class Simulation
   end
 
   def run_monster_combinations
-    combined_trials = Trial.new(nil, count)
+    combined_trials = Trial.new(nil, 0)
     combined_trials.party = party
-    @count = encounter_combination_count
-    encounter_combinations.each do |encounter|
-      self.trials << Trial.new(encounter, count).run(party)
+    encounter_combinations.each do |adventure|
+      self.trials << Trial.new(adventure, count).run(party)
     end
     analyze_trials
   end
 
-  private
-
-  def encounter_combination_count
-    count / encounter_combinations.count / 4
+  def run_hard_encounters
+    combined_trials = Trial.new(nil, 0)
+    combined_trials.party = party
+    hard_encounters.each do |encounter|
+      adventure = AdventuringDay.new(Array.new(4) { encounter })
+      trial = Trial.new(adventure, count).run(party)
+      self.trials << trial
+      combined_trials.outcomes += trial.outcomes
+    end
+    trials.each(&:outcome)
+    combined_trials.outcome
   end
 
-  def encounter_combinations
-    @encounters ||= (1..6).flat_map do |n|
+  def run_monster_balance
+    %w(Kobold Goblin Orc).each do |monster|
+      no_death_chance = 1
+      n = 1
+      trials = []
+      until no_death_chance < 0.9
+        monsters = Array.new(n) { Monster.new(monster) }
+        encounters = Array.new(4) { Encounter.new(monsters) }
+        adventure = AdventuringDay.new(encounters)
+        trials << Trial.new(adventure, count).run(party)
+        no_death_chance = trials.last.death_chance(0)
+        n += 1
+      end
+      self.trials << trials.min do |a, b|
+        (a.death_chance(0) - 0.9).abs <=> (b.death_chance(0) - 0.9).abs
+      end
+    end
+    trials.each(&:outcome)
+  end
+
+  private
+
+  def balanced_adventures
+    balanced_encounters.repeated_combination(4).map do |encounters|
+      AdventuringDay.new(encounters)
+    end
+  end
+
+  def balanced_encounters
+    [
+      Encounter.new( Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
+    ]
+  end
+
+  def hard_encounters
+    xps = @encounters ||= (1..6).flat_map do |n|
       challenge_ratings.repeated_combination(n).to_a
     end.select do |encounter|
       adjusted_xp(encounter) == 300
     end.map do |encounter|
       Encounter.new(encounter.map { |cr| monster_by_cr cr })
-    end.repeated_combination(4).map do |adventure|
+    end
+  end
+
+  def encounter_combinations
+    hard_encounters.repeated_combination(4).map do |adventure|
       AdventuringDay.new(adventure)
     end
   end
 
   def adjusted_xp encounter
-    encounter.map { |cr| cr_xp[cr] }.reduce(0, :+) * multiplier(encounter.count)
+    encounter.map { |cr| cr_xp[cr] }.sum * multiplier(encounter.count)
   end
 
   def challenge_ratings
@@ -89,6 +151,8 @@ class Simulation
     when '1/8' then Monster.new('Kobold')
     when '1/4' then Monster.new('Goblin')
     when '1/2' then Monster.new('Orc')
+    when 1 then Monster.new('Bugbear')
+    when 2 then Monster.new('Ogre')
     end
   end
 
@@ -107,16 +171,12 @@ class Simulation
     @party_combinations ||= party.repeated_combination(4)
   end
 
-  def party_combination_count
-    (count / party_combinations.count / scenerio.count) || 1
-  end
-
   def standard_scenerio
     AdventuringDay.new([
-      Encounter.new( Array.new(4) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
-      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
     ])
   end
 
@@ -179,6 +239,7 @@ class Simulation
       spells: [
         :burning_hands,
         :find_familiar,
+        :shield,
       ]
     )
   end

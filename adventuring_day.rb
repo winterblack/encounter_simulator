@@ -46,6 +46,6 @@ class AdventuringDay
   end
 
   def rounds
-    outcomes.map(&:rounds).reduce(:+) / outcomes.count
+    outcomes.map(&:rounds).sum / outcomes.count
   end
 end

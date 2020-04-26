@@ -28,14 +28,15 @@ class Trial
   end
 
   def average_rounds
-    (outcomes.map(&:rounds).reduce(:+) / count.to_f).round
+    (outcomes.map(&:rounds).sum / count.to_f).round
   end
 
   def average_hp_remaining
-    outcomes.map(&:remaining_hp).reduce(:+) / count.to_f
+    outcomes.map(&:remaining_hp).sum / count.to_f
   end
 
   def outcome
+    @count = outcomes.count
     print "\n Ran the scenerio #{count} times."
     print "\n Party: #{party.map &:class}"
     print "\n Monsters: #{outcomes.last.monsters}"

@@ -3,12 +3,13 @@ require_relative '../save'
 require_relative '../attack'
 require_relative '../../dice'
 
-class Spell < Action
+module Spell
   def perform
     character.spell_cast_this_turn = true
     character.spell_slots[spell_level] -= 1
 
     p "#{character.name} casts #{self.class}."
+    super
   end
 
   def evaluate

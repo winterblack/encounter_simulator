@@ -4,15 +4,16 @@ require_relative '../actions/help'
 class Character
   attr_reader :name, :level
   attr_reader :str, :dex, :con, :int, :wis, :cha
-  attr_reader :ac, :hp, :proficiency_bonus
+  attr_reader :hp, :proficiency_bonus
   attr_reader :save_proficiencies, :weapons
+  attr_accessor :ac
   attr_accessor :initiative, :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
   attr_accessor :helper, :glowing
 
   # monster features
-  attr_reader :pack_tactics, :nimble_escape
+  attr_reader :pack_tactics, :nimble_escape, :aggressive
 
   def initialize
     @actions = []
@@ -84,6 +85,7 @@ class Character
   end
 
   def opportunity_attack target
+    return unless target.standing?
     weapon = melee_weapons.max do |weapon|
       weapon.one_attack_value target
     end

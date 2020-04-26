@@ -1,6 +1,7 @@
 require_relative 'spell'
 
-class BurningHands < Spell
+class BurningHands < Action
+  include Spell
   include Save
   attr_reader :targets, :damage_roll
   Level = 1
@@ -35,7 +36,8 @@ class BurningHands < Spell
   end
 
   def evaluate_targets
-    average_damage * count
+    value = average_damage * count * count / targets.map(&:current_hp).sum
+    value = [value, count].min
   end
 
   def average_damage

@@ -3,7 +3,7 @@ require_relative '../class_features/second_wind'
 require_relative '../class_features/great_weapon_fighting'
 
 class Fighter < PlayerCharacter
-  attr_accessor :second_wind_used, :ac
+  attr_accessor :second_wind_used
   attr_reader :fighting_styles
 
   HD_Type = 10

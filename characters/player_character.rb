@@ -54,9 +54,7 @@ class PlayerCharacter < Character
 
   def before_short_rest
     self.reaction_used = false
-    until (actions+bonus_actions).map(&:evaluate).none? { |value| value > 0 }
-      take_turn
-    end
+    take_turn until no_actions_left && !dying
   end
 
   def short_rest
@@ -81,6 +79,10 @@ class PlayerCharacter < Character
   end
 
   private
+
+  def no_actions_left
+    (actions+bonus_actions).map(&:evaluate).none? { |value| value > 0 }
+  end
 
   def check_if_dying
     return if current_hp > 1

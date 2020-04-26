@@ -1,7 +1,8 @@
 require_relative 'spell'
 
-class GuidingBolt < Spell
+class GuidingBolt < Action
   include Attack
+  include Spell
   Level = 1
 
   def initialize
