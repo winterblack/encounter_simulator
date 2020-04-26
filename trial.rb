@@ -2,8 +2,8 @@ require_relative 'encounter'
 require_relative 'adventuring_day'
 
 class Trial
-  attr_reader :scenerio, :count, :party
-  attr_accessor :outcomes
+  attr_reader :scenerio, :count
+  attr_accessor :outcomes, :party
 
   def initialize scenerio, count
     @scenerio = scenerio

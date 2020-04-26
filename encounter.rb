@@ -23,6 +23,10 @@ class Encounter
     Encounter.new monsters.map(&:renew)
   end
 
+  def count
+    1
+  end
+
   private
 
   def play_round

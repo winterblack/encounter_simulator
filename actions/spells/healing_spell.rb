@@ -13,7 +13,8 @@ module HealingSpell
 
   def evaluate_for_healing
     return 0 if cannot
-    average_healing / character.hp.to_f
+    @target = character
+    average_healing / target.hp.to_f
   end
 
   private

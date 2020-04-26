@@ -25,6 +25,10 @@ class AdventuringDay
     encounters.map { |encounter| encounter.monsters.map &:monster }
   end
 
+  def count
+    encounters.count
+  end
+
   private
 
   def short_rest
