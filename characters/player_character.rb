@@ -53,8 +53,8 @@ class PlayerCharacter < Character
   end
 
   def before_short_rest
-    self.reaction_used = false
-    take_turn until no_actions_left && !dying
+    take_turn until !dying
+    take_turn while valid_action && standing?
   end
 
   def short_rest
@@ -78,10 +78,14 @@ class PlayerCharacter < Character
     hit_dice.map { |hd| 'd' + hd.type.to_s}.join(', ')
   end
 
+  def hit_dice_average
+    hit_dice.map(&:average).sum + hit_dice.count * con
+  end
+
   private
 
-  def no_actions_left
-    (actions+bonus_actions).map(&:evaluate).none? { |value| value > 0 }
+  def valid_action
+    (actions+bonus_actions).map(&:evaluate).any? { |value| value > 0 }
   end
 
   def check_if_dying

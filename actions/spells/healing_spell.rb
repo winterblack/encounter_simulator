@@ -31,8 +31,17 @@ module HealingSpell
 
   def evaluate_target target
     super
-    value = average_healing_value / target.hp.to_f
-    target.standing? ? value : value + action_value
+    @value = average_healing_value / target.hp.to_f
+    return short_rest_value if target.pc? && target.foes.none?(&:standing?)
+    @value = target.standing? ? value : value + action_value
+  end
+
+  def short_rest_value
+    if target.standing?
+      @value -= target.hit_dice_average
+    else
+      @value += action_value
+    end
   end
 
   def average_healing_value

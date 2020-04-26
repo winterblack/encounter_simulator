@@ -21,7 +21,9 @@ module Attack
     return 0 if !target || advantage?
     chance = hit_chance
     advantage = 1 - (1  - chance)**2
-    average_damage * (advantage - chance) / target.current_hp.to_f
+    delta = advantage - chance
+    value = average_damage * delta / target.current_hp.to_f
+    [delta, value].min
   end
 
   def evaluate_one_attack
@@ -38,24 +40,29 @@ module Attack
   private
 
   def trigger_opportunity_attack
-    if character.aggressive && character.engaged.none? && !target.melee
-      valid_foes = character.foes.select(&:melee).select(&:standing?).reject(&:reaction_used).reject(&:familiar?)
-      p "#{character.name} is aggressive!" if valid_foes.any?
-      valid_foes.each do |foe|
-        foe.opportunity_attack(character)
-      end
-    end
-    if character.nimble_escape
-      if character.engaged.any? && !character.engaged.include?(target)
-        p "Nimble escape!"
-      end
-    end
-    return if ranged || character.engaged.none? || character.nimble_escape
+    trigger_aggressive if character.aggressive
+    return nimble_escape if character.nimble_escape
+    return if ranged || character.engaged.none?
     return if character.engaged.include? target
     character.engaged.reject(&:reaction_used).each do |foe|
       foe.opportunity_attack(character)
     end
     character.disengage
+  end
+
+  def trigger_aggressive
+    return if character.striking_distance || target.melee
+    valid_foes = character.foes.select(&:melee).select(&:standing?).reject(&:reaction_used).reject(&:familiar?)
+    p "#{character.name} is aggressive!" if valid_foes.any?
+    valid_foes.each do |foe|
+      foe.opportunity_attack(character)
+    end
+  end
+
+  def nimble_escape
+    if character.engaged.any? && !character.engaged.include?(target)
+      p "Nimble escape!"
+    end
   end
 
   def hit_chance
@@ -98,7 +105,7 @@ module Attack
   end
 
   def must_target_melee targets
-    return false if ranged || character.engaged.any? || character.aggressive
+    return false if ranged || character.striking_distance || character.aggressive
     targets.reject(&:familiar?).any?(&:melee)
   end
 
@@ -111,16 +118,22 @@ module Attack
   end
 
   def evaluate_opportunity_attacks
-    if character.aggressive && character.engaged.none? && !target.melee
-      return character.foes.select(&:melee).select(&:standing?).reject(&:familiar?).map do |foe|
-        foe.opportunity_attack_value(character)
-      end.sum
-    end
+    return evaluate_aggressive if evaluate_aggressive?
     return 0 if ranged || character.engaged.none? || character.nimble_escape
     return 0 if character.engaged.include? target
     character.engaged.select(&:standing?).reject(&:familiar?).map do |foe|
       foe.opportunity_attack_value(character)
     end.sum
+  end
+
+  def evaluate_aggressive
+    character.foes.select(&:melee).select(&:standing?).reject(&:familiar?).map do |foe|
+      foe.opportunity_attack_value(character)
+    end.sum
+  end
+
+  def evaluate_aggressive?
+    character.aggressive && !character.striking_distance && !target.melee
   end
 
   def roll_to_hit
@@ -133,9 +146,16 @@ module Attack
   end
 
   def effects
-    character.engage target unless ranged || !target.standing? # TODO: don't engage on opportunity attacks
+    character.engage target unless ranged || !target.standing?
+    move_forward unless ranged || character.striking_distance
     engage_helper if character.helper
     target.glowing = false if character.glowing
+  end
+
+  def move_forward
+    character.striking_distance = true
+    return if character.foes.all?(&:melee) || character.foes.none?(&:melee)
+    p "#{character.name} moved into striking distance."
   end
 
   def engage_helper
@@ -144,7 +164,7 @@ module Attack
   end
 
   def miss
-    p "#{character.name} attacks #{target.name} and misses!"
+    p "#{character.name} attacks #{target.name} and misses with a #{name}."
   end
 
   def strike_message damage

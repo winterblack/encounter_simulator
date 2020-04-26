@@ -10,7 +10,7 @@ class Character
   attr_accessor :initiative, :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
-  attr_accessor :helper, :glowing
+  attr_accessor :helper, :glowing, :striking_distance
 
   # monster features
   attr_reader :pack_tactics, :nimble_escape, :aggressive

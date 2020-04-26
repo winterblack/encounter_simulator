@@ -24,6 +24,12 @@ class Familiar < Character
     true
   end
 
+  def die
+    allies.each { |ally| ally.allies.delete self }
+    foes.each { |foe| foe.foes.delete self }
+    p "Familiar vanishes."
+  end
+
   def before_short_rest
   end
 

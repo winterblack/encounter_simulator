@@ -10,7 +10,9 @@ def run_simulation args
   if args.include?('parties')
     Simulation.new.run_party_combinations
   elsif args.include?('hard')
-    Simulation.new.run_hard_encounters
+    Simulation.new(count: 1000).run_hard_encounters
+  elsif args.include?('medium')
+    Simulation.new(count: 1000).run_medium_encounters
   elsif args.include?('monsters')
     Simulation.new.run_monster_combinations
   elsif args.include?('monster-balance')
@@ -65,7 +67,7 @@ class Simulation
   def run_hard_encounters
     combined_trials = Trial.new(nil, 0)
     combined_trials.party = party
-    hard_encounters.each do |encounter|
+    dmg_encounters(300).each do |encounter|
       adventure = AdventuringDay.new(Array.new(4) { encounter })
       trial = Trial.new(adventure, count).run(party)
       self.trials << trial
@@ -74,6 +76,20 @@ class Simulation
     trials.each(&:outcome)
     combined_trials.outcome
   end
+
+  def run_medium_encounters
+    combined_trials = Trial.new(nil, 0)
+    combined_trials.party = party
+    dmg_encounters(200).each do |encounter|
+      adventure = AdventuringDay.new(Array.new(6) { encounter })
+      trial = Trial.new(adventure, count).run(party)
+      self.trials << trial
+      combined_trials.outcomes += trial.outcomes
+    end
+    trials.each(&:outcome)
+    combined_trials.outcome
+  end
+
 
   def run_monster_balance
     %w(Kobold Goblin Orc).each do |monster|
@@ -112,14 +128,33 @@ class Simulation
     ]
   end
 
-  def hard_encounters
-    xps = @encounters ||= (1..6).flat_map do |n|
-      challenge_ratings.repeated_combination(n).to_a
-    end.select do |encounter|
-      adjusted_xp(encounter) == 300
-    end.map do |encounter|
-      Encounter.new(encounter.map { |cr| monster_by_cr cr })
+  def dmg_encounters target
+    find_encounters(target).map do |xps|
+      Encounter.new(xps.map { |xp| monster_by_xp xp })
     end
+  end
+
+  def find_encounters target, i=0, sum=0, multiplier=1, encounter=[]
+    return [encounter] if sum * multiplier == target
+    return [] if sum * multiplier > target || i == xps.length
+    count = encounter.length
+    result = find_encounters(target, i+1, sum, multiplier, encounter)
+    max = (target - sum) / xps[i]
+    _encounter = encounter
+    j = 1
+    while j <= max
+      _encounter = _encounter.dup << xps[i]
+      sum = sum + xps[i]
+      multiplier = get_multiplier(count + 1)
+      count += 1
+      result = result.concat(find_encounters(target, i+1, sum, multiplier, _encounter))
+      j += 1
+    end
+    result
+  end
+
+  def xps
+    [25, 50, 100, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000]
   end
 
   def encounter_combinations
@@ -128,37 +163,18 @@ class Simulation
     end
   end
 
-  def adjusted_xp encounter
-    encounter.map { |cr| cr_xp[cr] }.sum * multiplier(encounter.count)
-  end
-
-  def challenge_ratings
-    ['1/8', '1/4', '1/2', 1]
-  end
-
-  def cr_xp
-    {
-      '1/8' => 25,
-      '1/4' => 50,
-      '1/2' => 100,
-      1 => 200,
-      2 => 450,
-    }
-  end
-
-  def monster_by_cr cr
-    case cr
-    when '1/8' then Monster.new('Kobold')
-    when '1/4' then Monster.new('Goblin')
-    when '1/2' then Monster.new('Orc')
-    when 1 then Monster.new('Bugbear')
-    when 2 then Monster.new('Ogre')
+  def monster_by_xp xp
+    case xp
+    when 25 then Monster.new('Kobold')
+    when 50 then Monster.new('Goblin')
+    when 100 then Monster.new('Orc')
+    when 200 then Monster.new('Bugbear')
+    when 450 then Monster.new('Ogre')
     end
   end
 
-  def multiplier count
+  def get_multiplier count
     case count
-    when 0 then 0
     when 1 then 1
     when 2 then 1.5
     when 3..6 then 2
@@ -174,9 +190,9 @@ class Simulation
   def standard_scenerio
     AdventuringDay.new([
       Encounter.new(Array.new(4) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(2) { Monster.new('Orc') }),
     ])
   end
 

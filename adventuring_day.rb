@@ -34,7 +34,7 @@ class AdventuringDay
   def short_rest
     print "\nThe party takes a short rest.\n"
 
-    party.select(&:standing?).each &:before_short_rest
+    party.each &:before_short_rest
     party.select(&:standing?).each &:short_rest
     party.each &:sheath_weapons
   end

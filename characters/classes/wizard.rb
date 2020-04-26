@@ -19,6 +19,7 @@ class Wizard < PlayerCharacter
       self.ac -= 5
       self.shield_active = false
     end
+    super
   end
 
   def short_rest
