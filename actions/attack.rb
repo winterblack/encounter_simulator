@@ -75,19 +75,19 @@ module Attack
   end
 
   def advantage_disadvantage
-    advantage, disadvantage = false, false
-    disadvantage = true if ranged && character.engaged.any?
-    advantage = advantage?
-
-    return nil if advantage && disadvantage
-    return :advantage if advantage
-    return :disadvantage if disadvantage
+    return nil if advantage? && disadvantage?
+    return :advantage if advantage?
+    return :disadvantage if disadvantage?
   end
 
   def advantage?
     return true if character.helper
     return true if pack_tactics?
     return true if target.glowing
+  end
+
+  def disadvantage?
+    return true if ranged && character.engaged.any?
   end
 
   def pack_tactics?
@@ -111,7 +111,7 @@ module Attack
 
   def evaluate_target target
     super
-    return zero if target.familiar?
+    return 0 if target.familiar?
     value = average_damage * hit_chance / target.current_hp
     value = [value, hit_chance].min
     value - evaluate_opportunity_attacks

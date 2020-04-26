@@ -23,16 +23,12 @@ class BurningHands < Action
 
   private
 
-  def valid_targets
-    []
-  end
-
   def damage_dice
     @damage_dice ||= Dice '3d6'
   end
 
   def choose_targets
-    character.foes.reject(&:dead).min(3) { |foe| foe.current_hp }
+    character.foes.select(&:standing?).min(3) { |foe| foe.current_hp }
   end
 
   def evaluate_targets
@@ -78,5 +74,9 @@ class BurningHands < Action
         target.take(damage_roll/2)
       end
     end
+  end
+
+  def valid_targets
+    []
   end
 end

@@ -32,8 +32,8 @@ module Spellcaster
     super(options)
     @spell_ability_score = send self.class::SpellAbility
     @spells = options[:spells]
-    memorize_spells
     set_spell_slots
+    memorize_spells
     set_spell_attack_bonus
     set_spell_save_dc
   end

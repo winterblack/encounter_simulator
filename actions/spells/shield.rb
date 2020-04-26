@@ -11,6 +11,7 @@ class Shield < Action
   def evaluate attack
     return zero if character.shield_active || cannot
     @value = attack.evaluate_for_shield
+    @value = value < 1 ? 0 : value
   end
 
   def perform

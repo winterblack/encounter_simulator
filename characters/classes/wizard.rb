@@ -53,8 +53,15 @@ class Wizard < PlayerCharacter
       case spell
       when :burning_hands then self.actions << BurningHands.new
       when :shield then self.shield = Shield.new self
+      when :sleep then self.actions << Sleep.new
+      when :mage_armor then cast_mage_armor
       end
     end
     super
+  end
+
+  def cast_mage_armor
+    self.spell_slots[1] -= 1
+    self.ac += 3
   end
 end

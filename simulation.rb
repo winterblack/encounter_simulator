@@ -16,9 +16,11 @@ def run_simulation args
   elsif args.include?('monsters')
     Simulation.new.run_monster_combinations
   elsif args.include?('monster-balance')
-    Simulation.new.run_monster_balance
+    Simulation.new(count: 1000).run_monster_balance
   elsif args.include?('balanced')
     Simulation.new.run_balanced
+  elsif args.include?('custom')
+    Simulation.new(count: 1).run_custom
   else
     Simulation.new(count: 1000).run
   end
@@ -46,6 +48,10 @@ class Simulation
 
   def run
     Trial.new(scenerio, count).run(party).outcomes
+  end
+
+  def run_custom
+    Trial.new(custom_scenerio, count).run(party).outcomes
   end
 
   def run_party_combinations
@@ -189,10 +195,19 @@ class Simulation
 
   def standard_scenerio
     AdventuringDay.new([
+      Encounter.new(Array.new(6) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+    ])
+  end
+
+  def custom_scenerio
+    AdventuringDay.new([
       Encounter.new(Array.new(4) { Monster.new('Kobold') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
-      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
     ])
   end
 
@@ -212,7 +227,7 @@ class Simulation
       spells: [
         :healing_word,
         :cure_wounds,
-        :guiding_bolt,
+        # :guiding_bolt,
       ],
       domain: :life
     )
@@ -255,7 +270,9 @@ class Simulation
       spells: [
         :burning_hands,
         :find_familiar,
+        :mage_armor,
         :shield,
+        :sleep,
       ]
     )
   end
