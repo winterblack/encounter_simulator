@@ -21,8 +21,10 @@ def run_simulation args
     Simulation.new.run_balanced
   elsif args.include?('custom')
     Simulation.new(count: 1).run_custom
+  elsif args.include?('spells')
+    Simulation.new(count: 1000).run_spell_test
   else
-    Simulation.new(count: 1000).run
+    Simulation.new(count: 10000).run
   end
 end
 
@@ -34,6 +36,34 @@ class Simulation
     @count = options[:count] || 100
     @party = options[:party] || standard_party
     @trials = []
+  end
+
+  def run_spell_test
+    deltas = {}
+    @cleric_spells = [:healing_word]
+    @wizard_spells = [:sleep]
+    control = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
+    spells.each do |spell|
+      next if spell == :healing_word || spell == :sleep
+      @cleric_spells = [:healing_word, spell]
+      @wizard_spells = [:sleep, spell]
+      trials << trial = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
+      trial.name = spell
+      deltas[spell] = {
+        tpk: (control.tpk_chance - trial.tpk_chance),
+        zero_death: (trial.death_chance(0) - control.death_chance(0))
+      }
+    end
+    puts
+    p 'control'
+    control.outcome
+    trials.each do |trial|
+      puts
+      p trial.name
+      trial.outcome
+      p "TPK chance - %#{(deltas[trial.name][:tpk] * 100).round(3)}"
+      p "Zero death chance + %#{(deltas[trial.name][:zero_death] * 100).round(3)}"
+    end
   end
 
   def run_balanced
@@ -119,17 +149,38 @@ class Simulation
 
   private
 
+  def spells
+    [
+      :burning_hands,
+      :cure_wounds,
+      :find_familiar,
+      :guiding_bolt,
+      :healing_word,
+      :mage_armor,
+      :shield,
+      :sleep,
+    ]
+  end
+
+  def cleric_spells
+    @cleric_spells ||= [:cure_wounds, :guiding_bolt, :healing_word]
+  end
+
+  def wizard_spells
+    @wizard_spells ||= [:burning_hands, :find_familiar, :mage_armor, :shield, :sleep]
+  end
+
   def balanced_adventures
-    balanced_encounters.repeated_combination(4).map do |encounters|
+    balanced_encounters.repeated_combination(2).map do |encounters|
       AdventuringDay.new(encounters)
     end
   end
 
   def balanced_encounters
     [
-      Encounter.new( Array.new(4) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
-      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new( Array.new(5) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(4) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(3) { Monster.new('Orc') }),
       Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
     ]
   end
@@ -195,10 +246,10 @@ class Simulation
 
   def standard_scenerio
     AdventuringDay.new([
-      Encounter.new(Array.new(6) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
     ])
   end
 
@@ -224,11 +275,7 @@ class Simulation
       wis: +3,
       ac: 18, #chain mail, shield
       weapons: ['mace'],
-      spells: [
-        :healing_word,
-        :cure_wounds,
-        # :guiding_bolt,
-      ],
+      spells: cleric_spells,
       domain: :life
     )
   end
@@ -267,13 +314,7 @@ class Simulation
       int: +3,
       ac: 13, #unarmored
       weapons: ['light crossbow', 'dagger'],
-      spells: [
-        :burning_hands,
-        :find_familiar,
-        :mage_armor,
-        :shield,
-        :sleep,
-      ]
+      spells: wizard_spells
     )
   end
 

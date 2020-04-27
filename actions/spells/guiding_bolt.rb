@@ -27,7 +27,12 @@ class GuidingBolt < Action
   end
 
   def evaluate_target target
-    super + advantage_value
+    return 0 unless target
+    return 0 if target.familiar?
+    @target = target
+    damage_ratio = average_damage / target.current_hp
+    return 0 unless damage_ratio < 1
+    (damage_ratio + advantage_value) * hit_chance
   end
 
   def advantage_value
