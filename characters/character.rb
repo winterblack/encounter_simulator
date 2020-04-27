@@ -11,6 +11,7 @@ class Character
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions
   attr_accessor :helper, :glowing, :striking_distance
+  attr_accessor :shield_of_faith
 
   # monster features
   attr_reader :pack_tactics, :nimble_escape, :aggressive

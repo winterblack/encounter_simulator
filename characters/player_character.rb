@@ -1,7 +1,7 @@
 require_relative 'character'
 
 class PlayerCharacter < Character
-  attr_accessor :dying, :death_saves, :stable, :hit_dice
+  attr_accessor :dying, :death_saves, :stable, :hit_dice, :concentration
   attr_reader :options, :ranged
 
   def initialize options
@@ -55,6 +55,7 @@ class PlayerCharacter < Character
   def before_short_rest
     take_turn until !dying
     take_turn while valid_action && standing?
+    encounter_durations_end
   end
 
   def short_rest
@@ -131,7 +132,7 @@ class PlayerCharacter < Character
       p "#{name} is stable."
     end
     die if death_saves.count(false) > 2
-    p "death saves: #{death_saves}"
+    p "death saves: #{death_saves}" unless standing?
   end
 
   def set_starting_hp
@@ -148,5 +149,9 @@ class PlayerCharacter < Character
     healing = hit_dice.pop.roll + con
     p "#{name} rolls a hit die."
     heal healing
+  end
+
+  def encounter_durations_end
+    self.concentration&.end_concentration
   end
 end

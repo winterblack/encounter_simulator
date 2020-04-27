@@ -5,7 +5,7 @@ class Wizard < PlayerCharacter
   include Spellcaster
   HD_Type = 6
   SpellAbility = :int
-  attr_accessor :arcane_recovery_used, :reactions, :shield, :shield_active
+  attr_accessor :arcane_recovery_used, :reactions, :shield
 
   def initialize options
     super(options)
@@ -15,9 +15,9 @@ class Wizard < PlayerCharacter
   end
 
   def take_turn
-    if self.shield_active
+    if shield && shield.active
       self.ac -= 5
-      self.shield_active = false
+      self.shield.active = false
     end
     super
   end

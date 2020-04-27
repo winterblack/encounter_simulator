@@ -41,11 +41,11 @@ class Weapon < Action
     average_damage * hit_chance / target.current_hp
   end
 
-  private
-
   def average_damage
     damage_dice.average + damage_bonus
   end
+
+  private
 
   def strike
     damage = roll_damage
