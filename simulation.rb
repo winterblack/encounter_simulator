@@ -163,7 +163,7 @@ class Simulation
   end
 
   def cleric_spells
-    @cleric_spells ||= [:cure_wounds, :guiding_bolt, :healing_word]
+    @cleric_spells ||= [:cure_wounds, :healing_word]
   end
 
   def wizard_spells

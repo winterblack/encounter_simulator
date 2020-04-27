@@ -1,6 +1,6 @@
 module Attack
   attr_accessor :attack_bonus
-  attr_reader :crit, :ranged
+  attr_reader :crit, :ranged, :short_range
 
   def perform
     @target = choose_target
@@ -88,14 +88,11 @@ module Attack
 
   def disadvantage?
     return true if ranged && character.engaged.any?
+    return true if short_range && !character.striking_distance
   end
 
   def pack_tactics?
-    return false unless character.pack_tactics
-    return true if ranged && character.allies.count > 1
-    character.engaged.any? do |foe|
-      foe.engaged.include?(character) && foe.engaged.count > 1
-    end
+    character.pack_tactics && target.engaged.any?
   end
 
   def valid_targets

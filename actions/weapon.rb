@@ -19,6 +19,7 @@ class Weapon < Action
     @ranged = entry['ranged'] || false
     @great = entry['great'] || false
     @light = entry['light'] || false
+    @short_range = entry['short range'] || false
   end
 
   def opportunity_attack target
