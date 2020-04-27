@@ -14,6 +14,7 @@ module SneakAttack
   end
 
   def sneaking?
+    return true if !target #for evaluating bless
     return false if character.sneak_attack_used
     advantage_disadvantage == :advantage || target.engaged.count > 0
   end

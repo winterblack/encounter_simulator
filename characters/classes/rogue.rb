@@ -14,6 +14,7 @@ class Rogue < PlayerCharacter
   end
 
   def take_turn
+    self.sneak_attack_used = false
     super
     self.sneak_attack_used = false
   end

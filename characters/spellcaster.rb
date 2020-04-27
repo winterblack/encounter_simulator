@@ -56,7 +56,9 @@ module Spellcaster
   private
 
   def memorize_spells
-    (actions+bonus_actions).each { |action| action.character = self }
+    (actions+bonus_actions+reactions).each do |action|
+      action.character = self
+    end
   end
 
   def memorized_spells

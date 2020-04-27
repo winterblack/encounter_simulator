@@ -1,4 +1,7 @@
+require_relative 'blessing'
+
 module Attack
+  include Blessing
   attr_accessor :attack_bonus
   attr_reader :crit, :ranged, :short_range
 
@@ -23,7 +26,7 @@ module Attack
     advantage = 1 - (1  - chance)**2
     delta = advantage - chance
     value = average_damage * delta / target.current_hp.to_f
-    [delta, value].min
+    [delta, value].min - evaluate_opportunity_attacks
   end
 
   def evaluate_one_attack
@@ -67,6 +70,7 @@ module Attack
 
   def hit_chance
     chance = (21 + attack_bonus - target.ac) / 20.0
+    chance = [chance, 0.95].max
     case advantage_disadvantage
     when nil then chance
     when :advantage then 1 - (1 - chance)**2
@@ -135,11 +139,15 @@ module Attack
 
   def roll_to_hit
     p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
-    roll = D20.roll advantage_disadvantage
+    roll = to_hit_roll
     to_hit = roll + attack_bonus
     target.trigger_shield(self) if target.respond_to? :trigger_shield
     @hit = roll != 1 && to_hit >= target.ac
     @crit = roll == 20
+  end
+
+  def to_hit_roll
+    D20.roll advantage_disadvantage
   end
 
   def effects

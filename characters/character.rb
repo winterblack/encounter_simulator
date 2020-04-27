@@ -9,19 +9,20 @@ class Character
   attr_accessor :ac
   attr_accessor :initiative, :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
-  attr_accessor :actions, :bonus_actions
+  attr_accessor :actions, :bonus_actions, :reactions
   attr_accessor :helper, :glowing, :striking_distance
-  attr_accessor :shield_of_faith
+  attr_accessor :concentrating_on, :spell_effects
 
   # monster features
   attr_reader :pack_tactics, :nimble_escape, :aggressive
 
   def initialize
-    @actions = []
     @actions = [Help.new]
     actions.each { |action| action.character = self }
     @bonus_actions = []
+    @reactions = []
     @engaged = []
+    @spell_effects = []
   end
 
   def roll_initiative
@@ -30,7 +31,7 @@ class Character
 
   def take_turn
     print "\nIt's #{name}'s turn.\n"
-    self.reaction_used = false
+    start_turn
     action = choose_action
     action.perform if action && action.evaluate > 0
     return unless standing?
@@ -105,6 +106,11 @@ class Character
   end
 
   private
+
+  def start_turn
+    self.reaction_used = false
+    (actions+bonus_actions+reactions).each(&:start_turn)
+  end
 
   def melee_weapons
     actions.select(&:weapon?).reject(&:ranged)

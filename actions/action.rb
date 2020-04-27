@@ -44,6 +44,12 @@ class Action
     @value = evaluate_target(target)
   end
 
+  def start_turn
+  end
+
+  def after_encounter
+  end
+
   private
 
   def engaged_first targets

@@ -21,9 +21,10 @@ class Cleric < PlayerCharacter
   def memorize_spells
     spells.each do |spell|
       case spell
-      when :healing_word then self.bonus_actions << HealingWord.new
+      when :bless then self.actions << Bless.new
       when :cure_wounds then self.actions << CureWounds.new
       when :guiding_bolt then self.actions << GuidingBolt.new
+      when :healing_word then self.bonus_actions << HealingWord.new
       when :shield_of_faith then self.bonus_actions << ShieldOfFaith.new
       end
     end

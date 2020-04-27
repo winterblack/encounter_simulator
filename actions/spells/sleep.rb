@@ -15,12 +15,6 @@ class Sleep < Action
 
   def perform
     super
-    put_fuckers_to_sleep
-  end
-
-  private
-
-  def put_fuckers_to_sleep
     sleep_total = sleep_dice.roll
     p "#{character.name} rolls #{sleep_total}."
     targets.each do |target|
@@ -28,6 +22,8 @@ class Sleep < Action
       sleep_total >= 0 ? sleep(target) : break
     end
   end
+
+  private
 
   def sleep target
     target.current_hp = 0
@@ -46,12 +42,12 @@ class Sleep < Action
     return 0 if targets.map(&:current_hp).sum < 11
     value = 0
     targets.count.times do |i|
-      value += sleep_chance i
+      value += sleep_chance i + 1
     end
   end
 
-  def sleep_chance i
-    hp = targets[0..i].map(&:current_hp).sum
+  def sleep_chance count
+    hp = targets.first(count).map(&:current_hp).sum
     total_chance hp
   end
 

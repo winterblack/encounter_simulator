@@ -1,6 +1,8 @@
 require_relative 'spell'
 
 module HealingSpell
+  attr_reader :healing
+
   def perform
     super
     healing = roll_healing
@@ -20,8 +22,8 @@ module HealingSpell
   private
 
   def roll_healing
-    healing = healing_dice.roll + character.spell_ability_score
-    p "#{character.name} heals #{target.name}."
+    @healing = healing_dice.roll + character.spell_ability_score
+    p "#{character.name} heals #{target.name} for #{healing}."
     healing
   end
 

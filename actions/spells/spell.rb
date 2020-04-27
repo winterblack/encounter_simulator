@@ -7,6 +7,7 @@ module Spell
   def perform
     character.spell_cast_this_turn = true
     character.spell_slots[spell_level] -= 1
+    character.concentrating_on = self if concentration?
 
     p "#{character.name} casts #{self.class}."
     super
@@ -20,6 +21,15 @@ module Spell
 
   def spell?
     true
+  end
+
+  def concentration?
+    false
+  end
+
+  def drop_concentration
+    p "#{character.name} drops concentration on #{self.class}."
+    character.concentrating_on = nil
   end
 
   private
@@ -39,10 +49,17 @@ module Spell
   end
 
   def cannot
-    insufficient_spell_slots || character.spell_cast_this_turn
+    return true if insufficient_spell_slots
+    return true if character.spell_cast_this_turn
+    return true if concentration? && character.concentrating_on
+    return true if target_has_spell_effect
   end
 
   def insufficient_spell_slots
     character.spell_slots[spell_level] == 0
+  end
+
+  def target_has_spell_effect
+    target && target.spell_effects.map(&:class).include?(self.class)
   end
 end

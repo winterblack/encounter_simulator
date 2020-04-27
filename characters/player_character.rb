@@ -1,7 +1,7 @@
 require_relative 'character'
 
 class PlayerCharacter < Character
-  attr_accessor :dying, :death_saves, :stable, :hit_dice, :concentration
+  attr_accessor :dying, :death_saves, :stable, :hit_dice
   attr_reader :options, :ranged
 
   def initialize options
@@ -53,9 +53,9 @@ class PlayerCharacter < Character
   end
 
   def before_short_rest
+    actions.each(&:after_encounter)
     take_turn until !dying
     take_turn while valid_action && standing?
-    encounter_durations_end
   end
 
   def short_rest
@@ -149,9 +149,5 @@ class PlayerCharacter < Character
     healing = hit_dice.pop.roll + con
     p "#{name} rolls a hit die."
     heal healing
-  end
-
-  def encounter_durations_end
-    self.concentration&.end_concentration
   end
 end

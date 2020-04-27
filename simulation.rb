@@ -20,7 +20,7 @@ def run_simulation args
   elsif args.include?('balanced')
     Simulation.new.run_balanced
   elsif args.include?('custom')
-    Simulation.new(count: 100).run_custom
+    Simulation.new(count: 1000).run_custom
   elsif args.include?('spells')
     Simulation.new(count: 1000).run_spell_test
   else
@@ -43,8 +43,8 @@ class Simulation
     @cleric_spells = [:healing_word]
     @wizard_spells = [:sleep]
     control = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
-    [:shield_of_faith].each do |spell|
-      next if spell == :healing_word || spell == :sleep
+    spells.each do |spell|
+      next if [:healing_word, :sleep].include? spell
       @cleric_spells = [:healing_word, spell]
       @wizard_spells = [:sleep, spell]
       trials << trial = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
@@ -151,6 +151,7 @@ class Simulation
 
   def spells
     [
+      :bless,
       :burning_hands,
       :cure_wounds,
       :find_familiar,
@@ -164,7 +165,7 @@ class Simulation
   end
 
   def cleric_spells
-    @cleric_spells ||= [:cure_wounds, :healing_word, :shield_of_faith]
+    @cleric_spells ||= [:cure_wounds, :healing_word]
   end
 
   def wizard_spells

@@ -5,21 +5,13 @@ class Wizard < PlayerCharacter
   include Spellcaster
   HD_Type = 6
   SpellAbility = :int
-  attr_accessor :arcane_recovery_used, :reactions, :shield
+  attr_accessor :arcane_recovery_used
 
   def initialize options
     super(options)
     @melee = options[:melee] || false
     @ranged = !melee
     @save_proficiencies = [:int, :wis]
-  end
-
-  def take_turn
-    if shield && shield.active
-      self.ac -= 5
-      self.shield.active = false
-    end
-    super
   end
 
   def short_rest
@@ -32,8 +24,9 @@ class Wizard < PlayerCharacter
   end
 
   def trigger_shield attack
-    return unless spells.include?(:shield)
-    shield.perform if shield.evaluate(attack) > 0
+    reactions.each do |reaction|
+      reaction.perform if reaction.evaluate(attack) > 0
+    end
   end
 
   private
@@ -52,7 +45,7 @@ class Wizard < PlayerCharacter
     spells.each do |spell|
       case spell
       when :burning_hands then self.actions << BurningHands.new
-      when :shield then self.shield = Shield.new self
+      when :shield then self.reactions << Shield.new
       when :sleep then self.actions << Sleep.new
       when :mage_armor then cast_mage_armor
       end

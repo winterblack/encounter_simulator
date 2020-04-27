@@ -1,10 +1,8 @@
 module DiscipleOfLife
   private
 
-  def roll_healing
-    healing = super + life_bonus
-    p "#{character.name} heals #{target.name} for #{healing}."
-    healing
+  def healing
+    super + life_bonus
   end
 
   def average_healing
