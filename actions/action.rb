@@ -33,6 +33,10 @@ class Action
     false
   end
 
+  def crossbow_expert?
+    false
+  end
+
   def choose_target
     engaged_first(valid_targets).max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
   end

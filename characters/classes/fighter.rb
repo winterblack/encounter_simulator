@@ -32,20 +32,20 @@ class Fighter < PlayerCharacter
   def train_second_wind
     second_wind = SecondWind.new
     second_wind.character = self
-    @bonus_actions = [second_wind]
+    @bonus_actions << second_wind
   end
 
   def train_fighting_styles
     fighting_styles.each do |fighting_style|
       case fighting_style
-      when :defense then self.ac += 1
+      when :defense then @ac += 1
       when :great_weapon_fighting then train_great_weapon_fighting
       end
     end
   end
 
   def train_great_weapon_fighting
-    actions.select(&:weapon?).select(&:great).each do |weapon|
+    (actions+bonus_actions).select(&:weapon?).select(&:great).each do |weapon|
       weapon.damage_dice.extend GreatWeaponFighting
     end
   end

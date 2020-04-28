@@ -6,8 +6,9 @@ class Character
   attr_reader :str, :dex, :con, :int, :wis, :cha
   attr_reader :hp, :proficiency_bonus
   attr_reader :save_proficiencies, :weapons
+  attr_reader :initiative
   attr_accessor :ac
-  attr_accessor :initiative, :current_hp, :melee, :dead, :reaction_used
+  attr_accessor :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions, :reactions
   attr_accessor :helper, :glowing, :striking_distance
@@ -26,7 +27,7 @@ class Character
   end
 
   def roll_initiative
-    self.initiative = D20.roll + dex
+    @initiative = D20.roll + dex
   end
 
   def take_turn
@@ -87,7 +88,7 @@ class Character
   end
 
   def opportunity_attack target
-    return unless target.standing?
+    return unless target.standing? && melee_weapons.any?
     weapon = melee_weapons.max do |weapon|
       weapon.one_attack_value target
     end
@@ -99,18 +100,16 @@ class Character
   end
 
   def opportunity_attack_value target
-    return 0 if reaction_used
-    melee_weapons.map do |weapon|
-      weapon.one_attack_value target
-    end.max
+    return 0 if reaction_used || melee_weapons.none?
+    melee_weapons.map { |weapon| weapon.one_attack_value target }.max
   end
-
-  private
 
   def start_turn
     self.reaction_used = false
     (actions+bonus_actions+reactions).each(&:start_turn)
   end
+
+  private
 
   def melee_weapons
     actions.select(&:weapon?).reject(&:ranged)

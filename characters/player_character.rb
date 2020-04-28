@@ -1,8 +1,11 @@
+require 'require_all'
 require_relative 'character'
+require_all 'feats'
 
 class PlayerCharacter < Character
   attr_accessor :dying, :death_saves, :stable, :hit_dice
   attr_reader :options, :ranged
+  attr_reader :feats
 
   def initialize options
     super()
@@ -16,11 +19,13 @@ class PlayerCharacter < Character
     @int = options[:int] || 0
     @wis = options[:wis] || 0
     @cha = options[:cha] || 0
+    @feats = options[:feats] || []
     @weapons = options[:weapons]
     @death_saves = []
     set_proficiency_bonus
     set_starting_hp
     equip_weapons
+    train_feats
   end
 
   def take_turn
@@ -43,7 +48,6 @@ class PlayerCharacter < Character
     false
   end
 
-
   def equip_offhand_weapon weapon
     character.bonus_actions << weapon
     ability_bonus = send weapon.ability
@@ -53,9 +57,10 @@ class PlayerCharacter < Character
   end
 
   def before_short_rest
-    actions.each(&:after_encounter)
     take_turn until !dying
-    take_turn while valid_action && standing?
+    take_turn while valid_action? && standing?
+    actions.each(&:after_encounter)
+    self.helper = nil
   end
 
   def short_rest
@@ -67,7 +72,7 @@ class PlayerCharacter < Character
   end
 
   def sheath_weapons
-    bonus_actions.reject!(&:weapon?)
+    bonus_actions.select(&:weapon?).reject!(&:light)
     self.melee = false if ranged
   end
 
@@ -85,7 +90,40 @@ class PlayerCharacter < Character
 
   private
 
-  def valid_action
+  def train_feats
+    feats.each do |feat|
+      case feat
+      when :great_weapon_master then train_great_weapon_master
+      when :heavy_armor_master then self.extend HeavyArmorMaster
+      when :crossbow_expert then train_crossbow_expert
+      when :healer then self.actions << Healer.new
+      end
+    end
+  end
+
+  def train_crossbow_expert
+    hand_crossbow = actions.find { |action| action.name == 'hand crossbow' }
+    return unless hand_crossbow
+    hand_crossbow.extend CrossbowExpert
+    bonus_attack = hand_crossbow.dup
+    self.bonus_actions << bonus_attack.extend(CrossbowExpert)
+  end
+
+  def train_great_weapon_master
+    great_weapons = actions.select(&:weapon?).select(&:great)
+    great_weapons.each { |weapon| weapon.extend GreatWeaponMaster }
+    cleave = great_weapons.map do |weapon|
+      action = Weapon.new weapon.weapon
+      action.extend GreatWeaponMaster
+      action.attack_bonus = str + proficiency_bonus
+      action.damage_bonus = str
+      action.character = self
+      action
+    end
+    self.bonus_actions += cleave
+  end
+
+  def valid_action?
     (actions+bonus_actions).map(&:evaluate).any? { |value| value > 0 }
   end
 

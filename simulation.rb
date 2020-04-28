@@ -20,9 +20,13 @@ def run_simulation args
   elsif args.include?('balanced')
     Simulation.new.run_balanced
   elsif args.include?('custom')
-    Simulation.new(count: 1000).run_custom
+    Simulation.new(count: 1).run_custom
   elsif args.include?('spells')
     Simulation.new(count: 1000).run_spell_test
+  elsif args.include?('feats')
+    Simulation.new(count: 10000).run_feat_test
+  elsif args.include?('encounter')
+    Simulation.new.run_encounter
   else
     Simulation.new(count: 10000).run
   end
@@ -38,15 +42,21 @@ class Simulation
     @trials = []
   end
 
+  def run_encounter
+    encounter = Encounter.new(Array.new(2) { Monster.new('Ogre') })
+    Trial.new(encounter, 1).run party
+  end
+
   def run_spell_test
     deltas = {}
+    @fighter_feats = []
     @cleric_spells = [:healing_word]
-    @wizard_spells = [:sleep]
+    @wizard_spells = [:mage_armor, :sleep]
     control = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
     spells.each do |spell|
       next if [:healing_word, :sleep].include? spell
       @cleric_spells = [:healing_word, spell]
-      @wizard_spells = [:sleep, spell]
+      @wizard_spells = [:sleep, :mage_armor, spell]
       trials << trial = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
       trial.name = spell
       deltas[spell] = {
@@ -64,6 +74,24 @@ class Simulation
       p "TPK chance - %#{(deltas[trial.name][:tpk] * 100).round(3)}"
       p "Zero death chance + %#{(deltas[trial.name][:zero_death] * 100).round(3)}"
     end
+  end
+
+  def run_feat_test
+    deltas = {}
+    @cleric_feats = []
+    @fighter_feats = []
+    @rogue_feats = []
+    @wizard_feats = []
+    @rogue_weapons = ['light crossbow', 'shortsword']
+    without_feats = Trial.new(scenerio, count).run([cleric, fighter, rogue, wizard])
+    with_feats = Trial.new(scenerio, count).run(party)
+    print "\n Without Feats \n"
+    without_feats.outcome
+    print "\n With Feats \n"
+    with_feats.outcome
+    print "\n Delats \n"
+    p "TPK chance - %#{(without_feats.tpk_chance - with_feats.tpk_chance) * 100}"
+    p "Zero death chance + %#{(with_feats.death_chance(0) - without_feats.death_chance(0)) * 100}"
   end
 
   def run_balanced
@@ -86,7 +114,7 @@ class Simulation
 
   def run_party_combinations
     party_combinations.each do |party|
-      self.trials << Trial.new(scenerio, count).run(party)
+      @trials << Trial.new(scenerio, count).run(party)
     end
     analyze_trials
   end
@@ -95,7 +123,7 @@ class Simulation
     combined_trials = Trial.new(nil, 0)
     combined_trials.party = party
     encounter_combinations.each do |adventure|
-      self.trials << Trial.new(adventure, count).run(party)
+      @trials << Trial.new(adventure, count).run(party)
     end
     analyze_trials
   end
@@ -106,7 +134,7 @@ class Simulation
     dmg_encounters(300).each do |encounter|
       adventure = AdventuringDay.new(Array.new(4) { encounter })
       trial = Trial.new(adventure, count).run(party)
-      self.trials << trial
+      @trials << trial
       combined_trials.outcomes += trial.outcomes
     end
     trials.each(&:outcome)
@@ -119,7 +147,7 @@ class Simulation
     dmg_encounters(200).each do |encounter|
       adventure = AdventuringDay.new(Array.new(6) { encounter })
       trial = Trial.new(adventure, count).run(party)
-      self.trials << trial
+      @trials << trial
       combined_trials.outcomes += trial.outcomes
     end
     trials.each(&:outcome)
@@ -140,7 +168,7 @@ class Simulation
         no_death_chance = trials.last.death_chance(0)
         n += 1
       end
-      self.trials << trials.min do |a, b|
+      @trials << trials.min do |a, b|
         (a.death_chance(0) - 0.9).abs <=> (b.death_chance(0) - 0.9).abs
       end
     end
@@ -169,7 +197,31 @@ class Simulation
   end
 
   def wizard_spells
-    @wizard_spells ||= [:burning_hands, :find_familiar, :mage_armor, :shield, :sleep]
+    @wizard_spells ||= [:burning_hands, :find_familiar, :mage_armor, :sleep]
+  end
+
+  def cleric_feats
+    @cleric_feats ||= [:heavy_armor_master]
+  end
+
+  def fighter_feats
+    @fighter_feats ||= [:great_weapon_master]
+  end
+
+  def rogue_feats
+    @rogue_feats ||= [:crossbow_expert]
+  end
+
+  def wizard_feats
+    @wizard_feats ||= [:healer]
+  end
+
+  def rogue_weapons
+    @rogue_weapons ||= ['hand crossbow']
+  end
+
+  def feats
+    [:great_weapon_master]
   end
 
   def balanced_adventures
@@ -248,19 +300,19 @@ class Simulation
 
   def standard_scenerio
     AdventuringDay.new([
-      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(6) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
-      Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
     ])
   end
 
   def custom_scenerio
     AdventuringDay.new([
-      Encounter.new(Array.new(4) { Monster.new('Kobold') }),
+      Encounter.new(Array.new(6) { Monster.new('Kobold') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
-      Encounter.new(Array.new(1) { Monster.new('Bugbear') }),
+      Encounter.new(Array.new(1) { Monster.new('Ogre') }),
     ])
   end
 
@@ -278,7 +330,8 @@ class Simulation
       ac: 18, #chain mail, shield
       weapons: ['mace'],
       spells: cleric_spells,
-      domain: :life
+      domain: :life,
+      feats: cleric_feats,
     )
   end
 
@@ -291,7 +344,8 @@ class Simulation
       con: +3,
       ac: 16, #chain mail
       weapons: ['greatsword'],
-      fighting_styles: [:great_weapon_fighting]
+      fighting_styles: [:great_weapon_fighting],
+      feats: fighter_feats,
     )
   end
 
@@ -303,7 +357,8 @@ class Simulation
       con: +3,
       int: +2,
       ac: 14, #leather
-      weapons: ['light crossbow', 'shortsword']
+      weapons: rogue_weapons,
+      feats: rogue_feats,
     )
   end
 
@@ -316,7 +371,8 @@ class Simulation
       int: +3,
       ac: 13, #unarmored
       weapons: ['light crossbow', 'dagger'],
-      spells: wizard_spells
+      spells: wizard_spells,
+      feats: wizard_feats,
     )
   end
 

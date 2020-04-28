@@ -3,7 +3,7 @@ require_relative 'blessing'
 module Attack
   include Blessing
   attr_accessor :attack_bonus
-  attr_reader :crit, :ranged, :short_range
+  attr_reader :crit, :ranged
 
   def perform
     @target = choose_target
@@ -43,6 +43,7 @@ module Attack
   private
 
   def trigger_opportunity_attack
+    return if crossbow_expert?
     trigger_aggressive if character.aggressive
     return nimble_escape if character.nimble_escape
     return if ranged || character.engaged.none?
@@ -55,7 +56,9 @@ module Attack
 
   def trigger_aggressive
     return if character.striking_distance || target.melee
-    valid_foes = character.foes.select(&:melee).select(&:standing?).reject(&:reaction_used).reject(&:familiar?)
+    valid_foes = character.foes.select(&:melee)
+                               .select(&:standing?)
+                               .reject(&:reaction_used)
     p "#{character.name} is aggressive!" if valid_foes.any?
     valid_foes.each do |foe|
       foe.opportunity_attack(character)
@@ -63,9 +66,7 @@ module Attack
   end
 
   def nimble_escape
-    if character.engaged.any? && !character.engaged.include?(target)
-      p "Nimble escape!"
-    end
+    p "Nimble escape!" if character.engaged.include?(target)
   end
 
   def hit_chance
@@ -91,8 +92,8 @@ module Attack
   end
 
   def disadvantage?
+    return false if crossbow_expert?
     return true if ranged && character.engaged.any?
-    return true if short_range && !character.striking_distance
   end
 
   def pack_tactics?
@@ -107,7 +108,9 @@ module Attack
 
   def must_target_melee targets
     return false if ranged || character.striking_distance || character.aggressive
-    targets.reject(&:familiar?).any?(&:melee)
+    targets.select(&:melee).any? do |foe|
+      foe.actions.select(&:weapon?).any? { |weapon| !weapon.ranged }
+    end
   end
 
   def evaluate_target target
@@ -119,16 +122,17 @@ module Attack
   end
 
   def evaluate_opportunity_attacks
+    return 0 if crossbow_expert?
     return evaluate_aggressive if evaluate_aggressive?
     return 0 if ranged || character.engaged.none? || character.nimble_escape
     return 0 if character.engaged.include? target
-    character.engaged.select(&:standing?).reject(&:familiar?).map do |foe|
+    character.engaged.select(&:standing?).map do |foe|
       foe.opportunity_attack_value(character)
     end.sum
   end
 
   def evaluate_aggressive
-    character.foes.select(&:melee).select(&:standing?).reject(&:familiar?).map do |foe|
+    character.foes.select(&:melee).select(&:standing?).map do |foe|
       foe.opportunity_attack_value(character)
     end.sum
   end

@@ -10,6 +10,7 @@ class Sleep < Action
     @targets = targets
     return zero if targets.none?
     @value = evaluate_targets
+    return zero if value < 1
     worth_spell_slot
   end
 
@@ -35,7 +36,7 @@ class Sleep < Action
   end
 
   def targets
-    @targets ||= character.foes.select(&:standing?).sort_by(&:current_hp)
+    character.foes.select(&:standing?).sort_by(&:current_hp)
   end
 
   def evaluate_targets
@@ -44,6 +45,7 @@ class Sleep < Action
     targets.count.times do |i|
       value += sleep_chance i + 1
     end
+    value
   end
 
   def sleep_chance count

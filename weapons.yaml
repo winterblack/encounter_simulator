@@ -31,14 +31,12 @@ light crossbow:
 dart:
   damage: 1d6
   ranged: true
-  short range: true
 shortbow:
   damage: 1d6
   ranged: true
 sling:
   damage: 1d4
   ranged: true
-  short range: true
 battleaxe:
   damage: 1d8
 flail:
@@ -88,7 +86,6 @@ whip:
 hand crossbow:
   damage: 1d6
   ranged: true
-  short range: true
 heavy crossbow:
   damage: 1d10
   ranged: true
