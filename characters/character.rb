@@ -42,6 +42,7 @@ class Character
 
   def take damage
     self.current_hp -= damage
+    p "#{name} is at #{current_hp} hp." unless current_hp < 1
     check_if_dying
   end
 

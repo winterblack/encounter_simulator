@@ -12,6 +12,7 @@ class Healer < Action
   def perform
     p "#{character.name} uses a healer's kit."
     super
+    return if healing == 1
     self.used_healers_kit_on << target
     target.spell_effects << self
   end
@@ -28,6 +29,7 @@ class Healer < Action
   end
 
   def evaluate_target target
+    return 0 if used_healers_kit_on.include?(target)
     super
   end
 

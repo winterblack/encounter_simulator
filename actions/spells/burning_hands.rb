@@ -61,7 +61,7 @@ class BurningHands < Action
   end
 
   def count
-    @count ||= targets.count
+    targets.count
   end
 
   def roll_saves

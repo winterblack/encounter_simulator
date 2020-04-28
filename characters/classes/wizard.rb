@@ -45,9 +45,10 @@ class Wizard < PlayerCharacter
     spells.each do |spell|
       case spell
       when :burning_hands then self.actions << BurningHands.new
+      when :mage_armor then cast_mage_armor
+      when :magic_missile then self.actions << MagicMissile.new
       when :shield then self.reactions << Shield.new
       when :sleep then self.actions << Sleep.new
-      when :mage_armor then cast_mage_armor
       end
     end
     super

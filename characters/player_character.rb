@@ -128,7 +128,7 @@ class PlayerCharacter < Character
   end
 
   def check_if_dying
-    return if current_hp > 1
+    return if current_hp > 0
     disengage
     if hp + current_hp > 0
       self.dying = true
@@ -151,16 +151,16 @@ class PlayerCharacter < Character
     roll = D20.roll
     case roll
     when 1
-      p "#{name} critically failed a death save!"
+      p "#{name} critically fails a death save!"
       self.death_saves += [false, false]
     when 2..9
-      p "#{name} failed a death save."
+      p "#{name} fails a death save."
       self.death_saves << false
     when 10..19
-      p "#{name} succeeded a death save."
+      p "#{name} succeeds a death save."
       self.death_saves << true
     when 20
-      p "#{name} critically succeeded a death save! #{name} is back in the fight."
+      p "#{name} critically succeeds a death save! #{name} is back in the fight."
       heal 1
       take_turn
     end

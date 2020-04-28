@@ -156,7 +156,7 @@ class Simulation
 
 
   def run_monster_balance
-    %w(Kobold Goblin Orc).each do |monster|
+    %w(Kobold Goblin Orc Bugbear Ogre).each do |monster|
       no_death_chance = 1
       n = 1
       trials = []
@@ -186,6 +186,7 @@ class Simulation
       :guiding_bolt,
       :healing_word,
       :mage_armor,
+      :magic_missile,
       :shield,
       :shield_of_faith,
       :sleep,
@@ -193,11 +194,11 @@ class Simulation
   end
 
   def cleric_spells
-    @cleric_spells ||= [:cure_wounds, :healing_word]
+    @cleric_spells ||= [:healing_word]
   end
 
   def wizard_spells
-    @wizard_spells ||= [:burning_hands, :find_familiar, :mage_armor, :sleep]
+    @wizard_spells ||= [:burning_hands, :find_familiar, :sleep, :magic_missile, :shield]
   end
 
   def cleric_feats
@@ -302,8 +303,8 @@ class Simulation
     AdventuringDay.new([
       Encounter.new(Array.new(6) { Monster.new('Kobold') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(1) { Monster.new('Ogre') }),
     ])
   end
 
