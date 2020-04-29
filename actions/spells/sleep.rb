@@ -27,7 +27,7 @@ class Sleep < Action
   private
 
   def sleep target
-    target.current_hp = 0
+    target.unconscious = true
     p "#{target.name} falls asleep!"
   end
 

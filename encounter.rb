@@ -32,7 +32,7 @@ class Encounter
   def play_round
     increment_round
     characters.sort_by(&:initiative).reverse.each do |character|
-      character.take_turn unless character.dead
+      character.take_turn if character.conscious
       break if over
     end
   end
@@ -51,7 +51,7 @@ class Encounter
   end
 
   def characters
-    @characters ||= monsters + party
+    @characters = monsters + party
   end
 
   def assign_allies_and_foes

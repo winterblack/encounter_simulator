@@ -30,9 +30,9 @@ class Help < Action
   end
 
   def evaluate_target ally
-    return 0 unless ally
+    return zero unless ally
     attack = ally_attack ally
-    return 0 unless attack
+    return zero unless attack
     attack.evaluate_advantage
   end
 

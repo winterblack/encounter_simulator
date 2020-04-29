@@ -172,13 +172,17 @@ module Attack
   end
 
   def pack_tactics?
-    character.pack_tactics && target.engaged.any?
+    character.pack_tactics && (target.engaged - [character]).any?
   end
 
   def after_attack
     target.glowing = false
     character.helper = nil
-    character.move_forward if long_range?
+    character.move_forward if move_forward?
+  end
+
+  def move_forward?
+    long_range? || (!ranged && !character.forward)
   end
 
   def miss

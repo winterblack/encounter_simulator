@@ -10,7 +10,7 @@ class Monster < Character
     super()
     entry = Monsters[monster]
     @monster = monster
-    @name = name || monster
+    @name = name || "#{monster}#{object_id/20}"
     @ac = entry['ac']
     @hp = entry['hp']
     @str = entry['str'] || 0
@@ -34,7 +34,7 @@ class Monster < Character
   end
 
   def inspect
-    "#<#{name} hp=#{current_hp}#{' dead' if dead}>"
+    "#<#{name} hp=#{current_hp}#{' dead' if dead}#{' unconscious' if unconscious}>"
   end
 
   private

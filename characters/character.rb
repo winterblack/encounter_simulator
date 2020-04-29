@@ -8,7 +8,7 @@ class Character
   attr_reader :save_proficiencies, :weapons
   attr_reader :initiative
   attr_accessor :ac
-  attr_accessor :current_hp, :melee, :dead, :reaction_used
+  attr_accessor :current_hp, :melee, :dead, :reaction_used, :unconscious
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions, :reactions
   attr_accessor :helper, :glowing, :forward
@@ -31,14 +31,11 @@ class Character
   end
 
   def take_turn
+
     print "\nIt's #{name}'s turn.\n"
     start_turn
     action = choose_action
-    if action && action.evaluate > 0
-      action.perform
-    else
-      move_forward
-    end
+    action && action.evaluate > 0 ? action.perform : move_forward
     return unless standing?
     bonus_action = choose_bonus_action
     bonus_action.perform if bonus_action && bonus_action.evaluate > 0
@@ -47,10 +44,10 @@ class Character
   def move_forward
     return p "#{name} has no valid actions." if forward
 
-    if foes.select(&:standing?).any?
-      p "#{name} moves forward to get into range."
-      self.forward = true
+    if !melee || actions.map(&:value).max == 0
+      p "#{name} moves to get into range."
     end
+    self.forward = true
   end
 
   def take damage
@@ -86,7 +83,7 @@ class Character
   end
 
   def standing?
-    current_hp > 0
+    current_hp > 0 && !unconscious
   end
 
   def pc?
@@ -133,6 +130,10 @@ class Character
   def trigger_attack_reaction attack
     reaction = reactions.max_by { |reaction| reaction.evaluate(attack) }
     reaction.perform if reaction && reaction.value > 0
+  end
+
+  def conscious
+    !dead && !unconscious
   end
 
   private
