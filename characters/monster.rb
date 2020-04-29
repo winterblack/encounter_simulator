@@ -10,7 +10,7 @@ class Monster < Character
     super()
     entry = Monsters[monster]
     @monster = monster
-    @name = name || "#{monster} #{object_id}"
+    @name = name || monster
     @ac = entry['ac']
     @hp = entry['hp']
     @str = entry['str'] || 0

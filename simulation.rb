@@ -20,7 +20,7 @@ def run_simulation args
   elsif args.include?('balanced')
     Simulation.new.run_balanced
   elsif args.include?('custom')
-    Simulation.new(count: 100_000).run_custom
+    Simulation.new(count: 10).run_custom
   elsif args.include?('spells')
     Simulation.new(count: 1000).run_spell_test
   elsif args.include?('feats')
@@ -311,8 +311,8 @@ class Simulation
   def custom_scenerio
     AdventuringDay.new([
       Encounter.new(Array.new(6) { Monster.new('Kobold') }),
-      Encounter.new(Array.new(3) { Monster.new('Goblin') }),
-      Encounter.new(Array.new(2) { Monster.new('Orc') }),
+      Encounter.new(Array.new(6) { Monster.new('Goblin') }),
+      Encounter.new(Array.new(3) { Monster.new('Orc') }),
       # Encounter.new(Array.new(1) { Monster.new('Ogre') }),
     ])
   end

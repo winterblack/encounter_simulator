@@ -15,7 +15,7 @@ module Blessing
 
   def hit_chance
     chance = (23.5 + attack_bonus - target.ac) / 20.0
-    chance = [chance, 0.95].max
+    chance = [chance, 0.95].min
     case advantage_disadvantage
     when nil then chance
     when :advantage then 1 - (1 - chance)**2

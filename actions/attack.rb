@@ -58,7 +58,7 @@ module Attack
 
   def hit_chance
     chance = (21 + attack_bonus - target.ac) / 20.0
-    chance = [chance, 0.95].max
+    chance = [chance, 0.95].min
     case advantage_disadvantage
     when nil then chance
     when :advantage then 1 - (1 - chance)**2
@@ -90,17 +90,15 @@ module Attack
   end
 
   def move
-    aggressive_move if aggressive?
     provoke_move if provoke?
+    aggressive_move if aggressive?
+    nimble_escape if nimble_escape?
     character.engage target unless ranged
     character.helper.engage target if character.helper
   end
 
   def provoke?
-    return false if ranged
-    return false if character.engaged.none?
-    return false if character.nimble_escape
-    return true unless character.engaged.include? target
+    !character.nimble_escape && _provoke?
   end
 
   def provoke_move
@@ -115,6 +113,20 @@ module Attack
     valid_targets.select(&:melee).reject(&:reaction_used).each do |foe|
       foe.opportunity_attack character
     end
+  end
+
+  def _provoke?
+    return false if ranged || character.engaged.none?
+    !character.engaged.include?(target)
+  end
+
+  def nimble_escape
+    character.disengage
+    p "Nimble escape!"
+  end
+
+  def nimble_escape?
+    _provoke? && !provoke?
   end
 
   def long_range?
