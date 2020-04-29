@@ -7,7 +7,7 @@ class Shield < Action
 
   def evaluate attack
     return zero if cannot
-    value = attack.evaluate_for_shield
+    value = attack.evaluate_damage character
     @value = value < 1 ? 0 : value
   end
 
@@ -25,5 +25,10 @@ class Shield < Action
       p "Shield ends. #{character.name} has #{character.ac} ac."
       character.spell_effects.delete self
     end
+  end
+
+  private
+
+  def choose_target
   end
 end

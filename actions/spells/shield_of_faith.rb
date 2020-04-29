@@ -40,8 +40,7 @@ class ShieldOfFaith < Action
   end
 
   def dangerous_action
-    character.foes.select(&:standing?).flat_map(&:actions).max do |a, b|
-      a.evaluate <=> b.evaluate
-    end
+    foes = character.foes.select(&:standing?)
+    foes.flat_map(&:actions).max_by { |action| action.evaluate }
   end
 end

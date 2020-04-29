@@ -11,11 +11,11 @@ class Character
   attr_accessor :current_hp, :melee, :dead, :reaction_used
   attr_accessor :allies, :foes, :engaged
   attr_accessor :actions, :bonus_actions, :reactions
-  attr_accessor :helper, :glowing, :striking_distance
+  attr_accessor :helper, :glowing, :forward
   attr_accessor :concentrating_on, :spell_effects
 
   # monster features
-  attr_reader :pack_tactics, :nimble_escape, :aggressive
+  attr_reader :pack_tactics, :nimble_escape
 
   def initialize
     @actions = [Help.new]
@@ -89,25 +89,33 @@ class Character
   end
 
   def opportunity_attack target
-    return unless target.standing? && melee_weapons.any?
-    weapon = melee_weapons.max do |weapon|
-      weapon.one_attack_value target
-    end
-    return unless weapon
-    p "#{name} makes an opportunity attack against #{target.name}!"
-    disengage
-    weapon.opportunity_attack target
+    return unless target.standing?
+    return unless weapon = best_melee_weapon(target)
+    weapon.attack target
     self.reaction_used = true
   end
 
   def opportunity_attack_value target
     return 0 if reaction_used || melee_weapons.none?
-    melee_weapons.map { |weapon| weapon.one_attack_value target }.max
+    best_melee_weapon(target).value
+  end
+
+  def best_melee_weapon target
+    melee_weapons.max_by { |weapon| weapon.evaluate_attack target }
   end
 
   def start_turn
     self.reaction_used = false
     (actions+bonus_actions+reactions).each(&:start_turn)
+  end
+
+  def long_range
+    !melee && !forward
+  end
+
+  def trigger_attack_reaction attack
+    reaction = reactions.max_by { |reaction| reaction.evaluate(attack) }
+    reaction.perform if reaction && reaction.value > 0
   end
 
   private
@@ -117,11 +125,11 @@ class Character
   end
 
   def choose_action
-    actions.max { |a, b| a.evaluate <=> b.evaluate }
+    actions.max_by { |action| action.evaluate_action }
   end
 
   def choose_bonus_action
-    bonus_actions.max { |a, b| a.evaluate <=> b.evaluate }
+    bonus_actions.max_by { |ba| ba.evaluate }
   end
 
   def check_if_dying

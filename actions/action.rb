@@ -3,14 +3,22 @@ class Action
   attr_reader :target, :value
 
   def perform
-    # required for super
+    @target = choose_target
   end
 
   def evaluate
     return zero if cannot
     @target = choose_target
     return zero unless target
-    @value = evaluate_target(target) + bonus_action_value
+    @value = evaluate_target(target)
+  end
+
+  def evaluate_action
+    evaluate + bonus_action_value
+  end
+
+  def evaluate_for_healing
+    evaluate
   end
 
   def attack?
@@ -37,17 +45,6 @@ class Action
     false
   end
 
-  def choose_target
-    engaged_first(valid_targets).max { |a, b| evaluate_target(a) <=> evaluate_target(b) }
-  end
-
-  def evaluate_for_healing
-    return 0 if cannot
-    @target = choose_target
-    return 0 unless target
-    @value = evaluate_target(target)
-  end
-
   def start_turn
   end
 
@@ -56,8 +53,12 @@ class Action
 
   private
 
-  def engaged_first targets
-    targets.sort { |target| target.engaged.any? ? 0 : 1 }
+  def choose_target
+    valid_targets.max_by { |target| evaluate_target target }
+  end
+
+  def bonus_action_value
+    character.bonus_actions.map(&:evaluate).max || 0
   end
 
   def bonus_action?
@@ -72,13 +73,6 @@ class Action
     false
   end
 
-  def bonus_action_value
-    return 0 if bonus_action?
-    character.bonus_actions.select(&:spell?).map(&:evaluate).max || 0
-  end
-
   def evaluate_target target
-    return 0 unless target
-    @target = target
   end
 end

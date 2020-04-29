@@ -54,7 +54,7 @@ class Bless < Action
     attacks = actions.select(&:attack?)
     return 0 if attacks.any?(:blessed?)
     return attacks.map(&:average_damage).max if ally == character
-    action = actions.max { |a, b| a.evaluate <=> b.evaluate }
+    action = actions.max_by { |action| action.evaluate }
     action.attack? ? action.average_damage : 0
   end
 

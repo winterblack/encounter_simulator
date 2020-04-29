@@ -23,12 +23,6 @@ class Wizard < PlayerCharacter
     "#<#{self.class} hp=#{current_hp} hit_dice=[#{hit_dice_string}] spell_slots=#{spell_slots[1..-1]}#{" arcane_recovery_used" if arcane_recovery_used}#{" death_saves=#{death_saves}" unless standing?}#{' dead' if dead}#{' dying' if dying}#{' stable' if stable}>"
   end
 
-  def trigger_shield attack
-    reactions.each do |reaction|
-      reaction.perform if reaction.evaluate(attack) > 0
-    end
-  end
-
   private
 
   def use_arcane_recovery

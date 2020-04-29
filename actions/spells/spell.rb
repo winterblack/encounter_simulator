@@ -40,7 +40,6 @@ module Spell
   end
 
   def bonus_action_value
-    return zero if character.bonus_actions.include? self
     character.bonus_actions.reject(&:spell?).map(&:evaluate).max || 0
   end
 

@@ -19,12 +19,12 @@ class Help < Action
     return 0 unless ally
     attack = ally_attack ally
     return 0 unless attack
-    attack.evaluate_help
+    attack.evaluate_advantage
   end
 
   def ally_attack ally
-    ally.actions.select(&:attack?).max do |a, b|
-      a.evaluate_help <=> b.evaluate_help
+    ally.actions.select(&:attack?).max_by do |ally|
+      ally.evaluate_advantage
     end
   end
 end

@@ -10,9 +10,9 @@ class GuidingBolt < Action
     @ranged = true
   end
 
-  def evaluate_help
+  def evaluate_advantage
     return 0 if cannot
-    @target = valid_targets.max { |a, b| evaluate_attack(a) <=> evaluate_attack(b) }
+    @target = valid_targets.max_by { |foe| evaluate_attack(foe) }
     return 0 if !target || advantage?
     chance = hit_chance
     advantage = 1 - (1  - chance)**2
@@ -40,7 +40,7 @@ class GuidingBolt < Action
     return 0 unless ally
     attack = ally_attack ally
     return 0 unless attack
-    attack.evaluate_help
+    attack.evaluate_advantage
   end
 
   def next_ally
@@ -51,8 +51,8 @@ class GuidingBolt < Action
   end
 
   def ally_attack ally
-    ally.actions.select(&:attack?).max do |a, b|
-      a.evaluate_help <=> b.evaluate_help
+    ally.actions.select(&:attack?).max_by do |attack|
+      attack.evaluate_advantage
     end
   end
 

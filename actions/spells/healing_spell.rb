@@ -32,7 +32,7 @@ module HealingSpell
   end
 
   def evaluate_target target
-    super
+    @target = target
     @value = max_healing / target.hp.to_f
     return short_rest_value if target.pc? && target.foes.none?(&:standing?)
     target.standing? ? value : value + action_value
