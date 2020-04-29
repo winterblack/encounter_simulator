@@ -20,7 +20,7 @@ def run_simulation args
   elsif args.include?('balanced')
     Simulation.new.run_balanced
   elsif args.include?('custom')
-    Simulation.new(count: 1).run_custom
+    Simulation.new(count: 100_000).run_custom
   elsif args.include?('spells')
     Simulation.new(count: 1000).run_spell_test
   elsif args.include?('feats')

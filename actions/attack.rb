@@ -21,7 +21,7 @@ module Attack
   def evaluate_attack target
     @target = target
     value = evaluate_damage(target) * hit_chance
-    @value = [value, hit_chance].min
+    @value = [value, 1].min
   end
 
   def evaluate_damage target
@@ -36,7 +36,7 @@ module Attack
     advantage = 1 - (1  - chance)**2
     delta = advantage - chance
     value = average_damage * delta / target.current_hp.to_f
-    [delta, value].min - evaluate_risk(target)
+    [value, 1].min - evaluate_risk(target)
   end
 
   def attack?

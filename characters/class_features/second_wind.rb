@@ -3,8 +3,8 @@ require_relative '../../actions/action'
 class SecondWind < Action
   def evaluate
     return zero if cannot
-    healing = [average_healing, character_hp - character.current_hp].min
-    @value = healing * 2 / character_hp.to_f
+    healing = [average_healing, character.hp - character.current_hp].min
+    @value = healing / character.hp.to_f
   end
 
   def perform
@@ -15,10 +15,6 @@ class SecondWind < Action
   end
 
   private
-
-  def character_hp
-    character.hp
-  end
 
   def fighter_level
     character.level
