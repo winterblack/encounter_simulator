@@ -19,6 +19,7 @@ class Weapon < Action
     @ranged = entry['ranged'] || false
     @great = entry['great'] || false
     @light = entry['light'] || false
+    @short_range = entry['short range'] || false
   end
 
   def opportunity_attack target
@@ -45,12 +46,6 @@ class Weapon < Action
   end
 
   private
-
-  def strike
-    damage = roll_damage
-    strike_message damage
-    target.take damage
-  end
 
   def roll_damage
     damage_dice.roll(crit) + damage_bonus

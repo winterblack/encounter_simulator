@@ -8,11 +8,25 @@ class Help < Action
 
   private
 
+  def cannot
+    !character.standing? || all_ranged? && !character.forward
+  end
+
+  def valid_targets
+    allies = character.allies.select(&:standing?)
+    if all_ranged?
+      allies = allies.reject { |ally| ally.melee && !ally.forward }
+    end
+    allies.sort_by(&:initiative)
+  end
+
+  def all_ranged?
+    character.foes.select(&:standing?).none?(&:melee)
+  end
+
   def choose_target
-    return nil unless character.standing?
-    allies = character.allies.select(&:standing?).sort_by(&:initiative)
-    index = allies.find_index(character)
-    allies[index - 1]
+    index = valid_targets.find_index(character)
+    valid_targets[index - 1]
   end
 
   def evaluate_target ally

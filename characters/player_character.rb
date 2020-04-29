@@ -61,6 +61,7 @@ class PlayerCharacter < Character
     take_turn while valid_action? && standing?
     actions.each(&:after_encounter)
     self.helper = nil
+    self.forward = false
   end
 
   def short_rest
@@ -104,9 +105,7 @@ class PlayerCharacter < Character
   def train_crossbow_expert
     hand_crossbow = actions.find { |action| action.name == 'hand crossbow' }
     return unless hand_crossbow
-    hand_crossbow.extend CrossbowExpert
-    bonus_attack = hand_crossbow.dup
-    self.bonus_actions << bonus_attack.extend(CrossbowExpert)
+    self.bonus_actions << hand_crossbow
   end
 
   def train_great_weapon_master

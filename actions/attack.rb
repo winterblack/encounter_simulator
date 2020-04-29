@@ -47,11 +47,12 @@ module Attack
 
   def valid_targets
     targets = character.foes.select(&:standing?)
-    targets = targets.select(&:melee) unless ranged || character.forward
+    targets = targets.select(&:striking_distance) unless ranged || character.forward
     targets = engaged_first(targets)
   end
 
   def evaluate_target target
+    return 0 if target.familiar?
     evaluate_attack(target) - evaluate_risk(target)
   end
 
@@ -93,19 +94,13 @@ module Attack
     provoke_move if provoke?
     character.engage target unless ranged
     character.helper.engage target if character.helper
-    character.forward = true if move_forward?
   end
 
   def provoke?
     return false if ranged
     return false if character.engaged.none?
-    return nimble_escape if character.nimble_escape
+    return false if character.nimble_escape
     return true unless character.engaged.include? target
-  end
-
-  def nimble_escape
-    p "Nimble escape!" unless character.engaged.include? target
-    false
   end
 
   def provoke_move
@@ -122,11 +117,12 @@ module Attack
     end
   end
 
-  def move_forward?
-    !ranged || short_range && target.long_range
+  def long_range?
+    short_range && target.long_range && !character.forward
   end
 
   def roll_to_hit
+    p "#{character.name} fires at long range!" if long_range?
     p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
     roll = to_hit_roll
     to_hit = roll + attack_bonus
@@ -141,6 +137,7 @@ module Attack
 
   def strike
     damage = roll_damage
+    crit_message + strike_message(damage)
     target.take damage
   end
 
@@ -157,6 +154,7 @@ module Attack
   end
 
   def disadvantage?
+    return true if long_range?
     return false if crossbow_expert?
     return true if ranged && character.engaged.any?
   end
@@ -168,6 +166,7 @@ module Attack
   def after_attack
     target.glowing = false
     character.helper = nil
+    character.move_forward if long_range?
   end
 
   def miss
@@ -175,7 +174,7 @@ module Attack
   end
 
   def strike_message damage
-    "#{character.name} hits #{target.name} for #{damage} damage with a #{name}."
+    p "#{character.name} hits #{target.name} for #{damage} damage with a #{name}."
   end
 
   def crit_message

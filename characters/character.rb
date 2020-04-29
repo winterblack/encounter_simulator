@@ -34,10 +34,23 @@ class Character
     print "\nIt's #{name}'s turn.\n"
     start_turn
     action = choose_action
-    action.perform if action && action.evaluate > 0
+    if action && action.evaluate > 0
+      action.perform
+    else
+      move_forward
+    end
     return unless standing?
     bonus_action = choose_bonus_action
     bonus_action.perform if bonus_action && bonus_action.evaluate > 0
+  end
+
+  def move_forward
+    return p "#{name} has no valid actions." if forward
+
+    if foes.select(&:standing?).any?
+      p "#{name} moves forward to get into range."
+      self.forward = true
+    end
   end
 
   def take damage
@@ -111,6 +124,10 @@ class Character
 
   def long_range
     !melee && !forward
+  end
+
+  def striking_distance
+    melee || forward
   end
 
   def trigger_attack_reaction attack

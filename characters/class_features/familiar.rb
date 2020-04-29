@@ -14,6 +14,7 @@ class Familiar < Character
     @int = -4
     @wis = +2
     @cha = -2
+    @forward = true
   end
 
   def familiar?

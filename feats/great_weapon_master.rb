@@ -1,8 +1,12 @@
 module GreatWeaponMaster
   attr_accessor :cleave
 
-  def strike
+  def perform
     p "#{character.name} cleaves!" if bonus_action?
+    super
+  end
+
+  def strike
     super
     cleaving_weapons.each { |weapon| weapon.cleave = true } if cleave?
     self.cleave = false

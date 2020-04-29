@@ -64,12 +64,6 @@ class GuidingBolt < Action
     damage_dice.average
   end
 
-  def strike
-    damage = roll_damage
-    strike_message damage
-    target.take damage
-  end
-
   def roll_damage
     damage_dice.roll(crit)
   end

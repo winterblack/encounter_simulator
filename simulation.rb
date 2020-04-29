@@ -313,7 +313,7 @@ class Simulation
       Encounter.new(Array.new(6) { Monster.new('Kobold') }),
       Encounter.new(Array.new(3) { Monster.new('Goblin') }),
       Encounter.new(Array.new(2) { Monster.new('Orc') }),
-      Encounter.new(Array.new(1) { Monster.new('Ogre') }),
+      # Encounter.new(Array.new(1) { Monster.new('Ogre') }),
     ])
   end
 
