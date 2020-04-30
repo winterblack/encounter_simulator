@@ -34,11 +34,15 @@ class Help < Action
     attack = ally_attack ally
     return zero unless attack
     attack.evaluate_advantage
+    # get attack and use target to evaluate own risk
+    # use target to engage target and provoke opportunity attacks
+    # restrict advantage for help by ally and foe targets
   end
 
   def ally_attack ally
     ally.actions.select(&:attack?).max_by do |ally|
       ally.evaluate_advantage
+      # this is no longer defined on character. Define it again.
     end
   end
 end

@@ -15,11 +15,10 @@ class Character
   attr_accessor :concentrating_on, :spell_effects
 
   # monster features
-  attr_reader :pack_tactics, :nimble_escape
+  attr_reader :pack_tactics, :nimble_escape, :aggressive
 
   def initialize
-    @actions = [Help.new]
-    actions.each { |action| action.character = self }
+    @actions = []
     @bonus_actions = []
     @reactions = []
     @engaged = []
@@ -28,6 +27,7 @@ class Character
 
   def roll_initiative
     @initiative = D20.roll + dex
+    @actions.reverse!
   end
 
   def take_turn
@@ -35,6 +35,7 @@ class Character
     print "\nIt's #{name}'s turn.\n"
     start_turn
     action = choose_action
+    binding.pry if action.class == Help && !pc? && !familiar?
     action && action.evaluate > 0 ? action.perform : move_forward
     return unless standing?
     bonus_action = choose_bonus_action
@@ -99,6 +100,7 @@ class Character
   end
 
   def opportunity_attack target
+    return if reaction_used
     return unless target.standing?
     return unless weapon = best_melee_weapon(target)
     weapon.attack target

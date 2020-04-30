@@ -20,7 +20,7 @@ def run_simulation args
   elsif args.include?('balanced')
     Simulation.new.run_balanced
   elsif args.include?('custom')
-    Simulation.new(count: 10).run_custom
+    Simulation.new(count: 1000).run_custom
   elsif args.include?('spells')
     Simulation.new(count: 1000).run_spell_test
   elsif args.include?('feats')
@@ -198,7 +198,7 @@ class Simulation
   end
 
   def wizard_spells
-    @wizard_spells ||= [:burning_hands, :find_familiar, :sleep, :magic_missile, :shield]
+    @wizard_spells ||= [:burning_hands, :find_familiar, :sleep, :magic_missile, :mage_armor]
   end
 
   def cleric_feats

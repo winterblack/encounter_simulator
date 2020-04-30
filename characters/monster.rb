@@ -10,7 +10,7 @@ class Monster < Character
     super()
     entry = Monsters[monster]
     @monster = monster
-    @name = name || "#{monster}#{object_id/20}"
+    @name = name || "#{monster}"
     @ac = entry['ac']
     @hp = entry['hp']
     @str = entry['str'] || 0
@@ -43,7 +43,7 @@ class Monster < Character
     case feature
     when 'pack tactics' then @pack_tactics = true
     when 'nimble escape' then @nimble_escape = true
-    when 'aggressive' then @forward = true
+    when 'aggressive' then @aggressive = true
     when 'brute' then add_brute_to_weapons
     when 'large' then add_large_to_weapons
     end

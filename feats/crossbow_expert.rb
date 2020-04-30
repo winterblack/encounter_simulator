@@ -7,7 +7,7 @@ module CrossbowExpert
   end
 
   def perform
-    @attacked = true
+    @attacked = true unless bonus_action?
     super
     @attacked = false if bonus_action?
   end

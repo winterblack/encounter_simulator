@@ -36,7 +36,17 @@ module Attack
     advantage = 1 - (1  - chance)**2
     delta = advantage - chance
     value = average_damage * delta / target.current_hp.to_f
-    [value, 1].min - evaluate_risk(target)
+    [value, 1].min
+  end
+
+  def evaluate_disadvantage
+    return 0 if cannot
+    @target = choose_target
+    return 0 if !target || advantage?
+    chance = hit_chance
+    delta = chance - chance**2
+    value = average_damage * delta / target.current_hp.to_f
+    [value, 1].min
   end
 
   def attack?
@@ -47,8 +57,12 @@ module Attack
 
   def valid_targets
     targets = character.foes.select(&:standing?)
-    targets = targets.select(&:striking_distance) unless ranged || character.forward
+    targets = targets.select(&:striking_distance) unless can_attack_long_range
     targets = engaged_first(targets)
+  end
+
+  def can_attack_long_range
+    ranged || character.forward || character.aggressive
   end
 
   def evaluate_target target
@@ -67,7 +81,7 @@ module Attack
   end
 
   def evaluate_risk target
-    return aggressive_risk if aggressive?
+    return evaluate_aggressive if aggressive?
     return 0 unless provoke?
     values = character.engaged.map do |foe|
       foe.opportunity_attack_value character
@@ -75,14 +89,13 @@ module Attack
     values.sum
   end
 
-  def aggressive_risk
-    character.foes.select(&:standing?).select(&:melee).map do |foe|
-      foe.opportunity_attack_value character
-    end.sum
+  def evaluate_aggressive
+    melee_foes.map { |foe| foe.opportunity_attack_value character }.sum
+    # weakest_melee_foe.opportunity_attack_value character
   end
 
   def aggressive?
-    !ranged && target.long_range && character.engaged.none?
+    !ranged && target.long_range && !character.forward
   end
 
   def engaged_first targets
@@ -110,8 +123,19 @@ module Attack
 
   def aggressive_move
     p "#{character.name} is aggressive!"
-    valid_targets.select(&:melee).reject(&:reaction_used).each do |foe|
+    # weakest_melee_foe.opportunity_attack character
+    melee_foes.each do |foe|
       foe.opportunity_attack character
+    end
+  end
+
+  def melee_foes
+    character.foes.select(&:standing?).select(&:melee)
+  end
+
+  def weakest_melee_foe
+    character.foes.reject(&:familiar?).select(&:standing?).select(&:melee).min_by do |foe|
+      foe.opportunity_attack_value character
     end
   end
 
@@ -121,8 +145,8 @@ module Attack
   end
 
   def nimble_escape
+    p "Nimble escape! #{character.name} was engaged with #{character.engaged.map(&:name).join(' and ')}"
     character.disengage
-    p "Nimble escape!"
   end
 
   def nimble_escape?
@@ -134,13 +158,18 @@ module Attack
   end
 
   def roll_to_hit
-    p "#{character.name} fires at long range!" if long_range?
-    p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
+    attack_messages
     roll = to_hit_roll
     to_hit = roll + attack_bonus
     target.trigger_attack_reaction self
     @hit = roll != 1 && to_hit >= target.ac
     @crit = roll == 20
+  end
+
+  def attack_messages
+    p "#{character.name} fires at long range!" if long_range?
+    p "Pack tactics!" if pack_tactics?
+    p "#{character.name} has #{advantage_disadvantage}." if advantage_disadvantage
   end
 
   def to_hit_roll
